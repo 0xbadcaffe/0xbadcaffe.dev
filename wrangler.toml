@@ -1,6 +1,5 @@
-[build]
-  command = "npm run build"
-  destination = "dist"
+name = "0xbadcaffe"
+compatibility_date = "2026-03-08"
 
-[build.environment]
-  NODE_VERSION = "22"
+[assets]
+directory = "./dist"
