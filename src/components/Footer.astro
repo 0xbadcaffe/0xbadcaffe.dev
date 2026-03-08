@@ -1,0 +1,59 @@
+---
+const hash = '0xBADCAFFE';
+---
+<footer>
+  <div class="wrapper">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span>0xbadcaffe</span> // Roy Cohen
+      </div>
+      <ul class="footer-links">
+        <li><a href="https://github.com/0xbadcaffe" target="_blank" rel="noopener">github</a></li>
+        <li><a href="https://x.com/0xbadcaffe" target="_blank" rel="noopener">x</a></li>
+        <li><a href="/rss.xml">rss</a></li>
+      </ul>
+      <div class="footer-commit">build <span>{hash}</span></div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 0;
+    position: relative;
+    z-index: 10;
+  }
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .footer-brand {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+  .footer-brand span { color: var(--cyan); font-family: var(--font-display); }
+  .footer-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+  }
+  .footer-links a {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--amber); }
+  .footer-commit {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+  .footer-commit span { color: var(--amber); }
+</style>

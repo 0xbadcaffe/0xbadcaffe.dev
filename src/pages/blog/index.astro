@@ -1,0 +1,117 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Group by year
+const byYear: Record<string, typeof posts> = {};
+for (const post of posts) {
+  const year = post.data.pubDate.getFullYear().toString();
+  if (!byYear[year]) byYear[year] = [];
+  byYear[year].push(post);
+}
+const years = Object.keys(byYear).sort((a, b) => Number(b) - Number(a));
+---
+
+<Base title="/logs" current="/blog">
+  <div class="wrapper page-layout">
+
+    <div class="page-header">
+      <div class="section-header">
+        <span class="section-label">~/logs</span>
+        <div class="section-line"></div>
+      </div>
+      <p class="page-subtitle">
+        kernel internals, packet analysis, reverse engineering, embedded systems.
+      </p>
+    </div>
+
+    {years.map(year => (
+      <div class="year-group">
+        <div class="year-label">{year}</div>
+        <div class="posts-list">
+          {byYear[year].map(post => {
+            const date = post.data.pubDate.toISOString().split('T')[0].replace(/-/g, '.');
+            return (
+              <a class="post-row" href={`/blog/${post.slug}`}>
+                <span class="row-date">{date}</span>
+                <span class="row-title">{post.data.title}</span>
+                <div class="row-tags">
+                  {(post.data.tags ?? []).map((t: string) => (
+                    <span class="tag">{t}</span>
+                  ))}
+                </div>
+                <span class="row-arrow">→</span>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    ))}
+
+  </div>
+</Base>
+
+<style>
+  .page-layout { padding: 4rem 2rem 6rem; }
+  .page-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-bottom: 3rem;
+    margin-top: -1rem;
+  }
+  .year-group { margin-bottom: 3rem; }
+  .year-label {
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    color: var(--amber);
+    letter-spacing: 4px;
+    margin-bottom: 0.75rem;
+    opacity: 0.7;
+  }
+  .posts-list { display: grid; gap: 1px; }
+  .post-row {
+    display: grid;
+    grid-template-columns: 120px 1fr auto auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem 1.5rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .post-row::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan);
+    transform: scaleY(0);
+    transition: transform 0.2s;
+  }
+  .post-row:hover { background: var(--bg3); border-color: rgba(0,212,255,0.25); }
+  .post-row:hover::before { transform: scaleY(1); }
+  .row-date { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 1px; white-space: nowrap; }
+  .row-title {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    transition: color 0.2s;
+  }
+  .post-row:hover .row-title { color: var(--cyan); }
+  .row-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
+  .row-arrow { color: var(--text-dim); transition: all 0.2s; font-size: 0.9rem; }
+  .post-row:hover .row-arrow { color: var(--cyan); text-shadow: 0 0 8px var(--cyan); }
+
+  @media (max-width: 640px) {
+    .post-row { grid-template-columns: 1fr auto; }
+    .row-date, .row-tags { display: none; }
+  }
+</style>

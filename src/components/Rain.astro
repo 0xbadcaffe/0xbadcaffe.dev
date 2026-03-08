@@ -1,0 +1,54 @@
+---
+---
+<canvas id="rain"></canvas>
+
+<style>
+  #rain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.18;
+  }
+</style>
+
+<script>
+  const canvas = document.getElementById('rain') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノ';
+  const drops = Array.from({ length: 80 }, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    speed: 1 + Math.random() * 3,
+    opacity: 0.1 + Math.random() * 0.5,
+    size: 10 + Math.random() * 6,
+    char: chars[Math.floor(Math.random() * chars.length)],
+  }));
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drops.forEach(d => {
+      ctx.fillStyle = `rgba(0,212,255,${d.opacity})`;
+      ctx.font = `${d.size}px 'Share Tech Mono', monospace`;
+      ctx.fillText(d.char, d.x, d.y);
+      d.y += d.speed;
+      if (d.y > canvas.height) {
+        d.y = -20;
+        d.x = Math.random() * canvas.width;
+      }
+      if (Math.random() < 0.02) {
+        d.char = chars[Math.floor(Math.random() * chars.length)];
+      }
+    });
+  }
+
+  setInterval(draw, 50);
+</script>

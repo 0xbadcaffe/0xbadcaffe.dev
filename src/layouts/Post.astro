@@ -1,0 +1,83 @@
+---
+import Base from './Base.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  pubDate: Date;
+  tags?: string[];
+}
+
+const { title, description, pubDate, tags = [] } = Astro.props;
+const formatted = pubDate.toISOString().split('T')[0].replace(/-/g, '.');
+---
+
+<Base title={title} description={description} current="/blog">
+  <article class="wrapper post-layout">
+    <header class="post-header">
+      <div class="post-meta">
+        <span class="post-date">{formatted}</span>
+        <div class="tags">
+          {tags.map(t => <span class="tag">{t}</span>)}
+        </div>
+      </div>
+      <h1 class="post-title">{title}</h1>
+      {description && <p class="post-description">{description}</p>}
+      <div class="post-divider"></div>
+    </header>
+    <div class="prose">
+      <slot />
+    </div>
+    <div class="post-footer">
+      <a href="/blog" class="btn btn-secondary">← back to /logs</a>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .post-layout {
+    padding: 4rem 2rem 6rem;
+  }
+  .post-header {
+    margin-bottom: 3rem;
+  }
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .post-date {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+  .tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .post-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    font-weight: 900;
+    color: var(--cyan);
+    text-shadow: 0 0 30px rgba(0,212,255,0.3);
+    letter-spacing: 1px;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+  .post-description {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+    max-width: 600px;
+  }
+  .post-divider {
+    margin-top: 2rem;
+    height: 1px;
+    background: linear-gradient(90deg, var(--cyan-dim), transparent);
+  }
+  .post-footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+</style>

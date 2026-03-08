@@ -1,0 +1,376 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 4);
+---
+
+<Base title="Home" current="/">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="wrapper hero-body">
+      <div class="hero-content">
+        <div class="hero-eyebrow">kernel // networking // reverse engineering</div>
+        <h1 class="hero-title">
+          <span class="line1">0xbadcaffe</span>
+          <span class="line2">Roy Cohen</span>
+        </h1>
+        <p class="hero-tagline">
+          I talk to hardware.<br />
+          <strong>Sometimes it talks back.</strong>
+        </p>
+        <blockquote class="hero-quote">
+          "I've seen things you people wouldn't believe.<br />
+          Attack ships on fire off the shoulder of Orion.<br />
+          I watched packets die in the dark near the Tannhäuser Gate."
+        </blockquote>
+        <div class="hero-cta">
+          <a href="/blog" class="btn btn-primary">read /logs</a>
+          <a href="#about" class="btn btn-secondary">$ whoami</a>
+        </div>
+      </div>
+
+      <div class="hero-side">
+        <div class="hex-display">
+          <div>0xDEAD <span class="c">←</span></div>
+          <div class="c">0xBADCAFFE ◉</div>
+          <div>0xCAFEBABE</div>
+          <div>0xDEADBEEF</div>
+          <div>0x00000000</div>
+          <br />
+          <div>ring0 <span class="c">▸</span> active</div>
+          <div>netif <span class="c">▸</span> up</div>
+          <div>kprobe <span class="c">▸</span> armed</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LATEST POSTS -->
+  <section class="posts-section">
+    <div class="wrapper">
+      <div class="section-header">
+        <span class="section-label">~/latest-logs</span>
+        <div class="section-line"></div>
+        <a href="/blog" class="view-all">view all →</a>
+      </div>
+
+      <div class="posts-grid">
+        {posts.map(post => {
+          const date = post.data.pubDate.toISOString().split('T')[0].replace(/-/g, '.');
+          return (
+            <a class="post-card" href={`/blog/${post.slug}`}>
+              <div class="post-meta">
+                <span class="post-date">{date}</span>
+                <div class="post-tags">
+                  {(post.data.tags ?? []).map((t: string) => (
+                    <span class="tag">{t}</span>
+                  ))}
+                </div>
+              </div>
+              <div class="post-title">{post.data.title}</div>
+              <div class="post-excerpt">{post.data.description}</div>
+              <span class="post-arrow">→</span>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about-section" id="about">
+    <div class="wrapper">
+      <div class="section-header">
+        <span class="section-label">$ whoami</span>
+        <div class="section-line"></div>
+      </div>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>
+            Embedded software engineer. I work at the intersection of
+            <strong>kernel space</strong>, <strong>network drivers</strong>,
+            and hardware that does exactly what it wants.
+          </p>
+          <p>
+            Based in Israel. Writing Rust where I can, C where I must.
+            Occasionally reverses firmware for fun.
+          </p>
+          <p>
+            Currently building <strong>packrat</strong> — a Wireshark-style
+            TUI packet analyzer in Rust.
+          </p>
+        </div>
+        <div class="skills-list">
+          {[
+            'Linux Kernel', 'Rust', 'Packet Analysis', 'FPGA / HDL',
+            'Reverse Engineering', 'IIO / Drivers', 'Yocto / Petalinux',
+            'libpcap', 'Network Protocols', 'Embedded C',
+          ].map(s => (
+            <div class="skill-item">{s}</div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TERMINAL -->
+  <section class="terminal-section">
+    <div class="wrapper">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="t-dot"></div>
+          <div class="t-dot"></div>
+          <div class="t-dot"></div>
+          <span class="t-title">0xbadcaffe@localhost ~</span>
+        </div>
+        <div class="terminal-body">
+          <div><span class="t-prompt">➜ 0xbadcaffe</span> git log --oneline -4</div>
+          <div class="t-output"><span class="t-highlight">a3f1c9b</span> packrat: add libpcap capture backend</div>
+          <div class="t-output"><span class="t-highlight">7e2d041</span> packrat: implement Visualize tab with sparklines</div>
+          <div class="t-output"><span class="t-highlight">c8b3e12</span> ratatui: fix ASCII rat splash screen timing</div>
+          <div class="t-output"><span class="t-highlight">91a4f88</span> kernel: IIO buffer overflow edge case</div>
+          <br />
+          <div><span class="t-prompt">➜ 0xbadcaffe</span> echo $MISSION</div>
+          <div class="t-output"><span class="t-success">kernel // packets // bits // truth</span></div>
+          <br />
+          <div><span class="t-prompt">➜ 0xbadcaffe</span> <span class="t-cursor"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    transition: transform 0.1s ease;
+  }
+  .hero-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+  .hero-content { animation: flicker 1.5s ease forwards; }
+  .hero-eyebrow {
+    font-size: 0.7rem;
+    color: var(--cyan);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.8s ease forwards 0.2s;
+    opacity: 0;
+  }
+  .hero-eyebrow::before { content: '> '; color: var(--amber); }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.4s;
+  }
+  .line1 {
+    display: block;
+    color: var(--cyan);
+    text-shadow: 0 0 30px rgba(0,212,255,0.5), 0 0 60px rgba(0,212,255,0.2);
+  }
+  .line2 {
+    display: block;
+    color: var(--amber);
+    text-shadow: 0 0 30px rgba(255,140,0,0.5);
+    font-size: 0.55em;
+    margin-top: 0.3em;
+    letter-spacing: 6px;
+  }
+  .hero-tagline {
+    font-family: var(--font-body);
+    font-size: 1.15rem;
+    color: var(--text-dim);
+    margin: 2rem 0;
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.6s;
+  }
+  .hero-tagline strong { color: var(--amber); font-weight: 600; }
+  .hero-quote {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    border-left: 2px solid var(--amber);
+    padding-left: 1rem;
+    margin: 2rem 0;
+    font-style: italic;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.8s;
+    max-width: 420px;
+    line-height: 1.7;
+  }
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 1s;
+  }
+  .hero-side {
+    opacity: 0;
+    animation: fadeIn 1s ease forwards 1.2s;
+    text-align: right;
+  }
+  .hex-display {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    line-height: 1.9;
+    letter-spacing: 1px;
+  }
+  .hex-display .c { color: var(--cyan); text-shadow: 0 0 8px var(--cyan); }
+
+  /* POSTS */
+  .posts-section {
+    padding: 5rem 0;
+  }
+  .view-all {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+  .view-all:hover { color: var(--cyan); }
+  .posts-grid { display: grid; gap: 1px; }
+  .post-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 1.5rem 2rem 1.5rem 1.5rem;
+    position: relative;
+    transition: all 0.3s;
+    display: block;
+    overflow: hidden;
+  }
+  .post-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan);
+    transform: scaleY(0);
+    transition: transform 0.3s;
+  }
+  .post-card:hover { background: var(--bg3); border-color: rgba(0,212,255,0.3); }
+  .post-card:hover::before { transform: scaleY(1); }
+  .post-meta { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.6rem; }
+  .post-date { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 2px; }
+  .post-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .post-title {
+    font-family: var(--font-body);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.3px;
+    transition: color 0.2s;
+  }
+  .post-card:hover .post-title { color: var(--cyan); }
+  .post-excerpt { font-size: 0.8rem; color: var(--text-dim); line-height: 1.6; }
+  .post-arrow {
+    position: absolute;
+    right: 1.5rem; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    transition: all 0.3s;
+  }
+  .post-card:hover .post-arrow { color: var(--cyan); text-shadow: 0 0 8px var(--cyan); right: 1.2rem; }
+
+  /* ABOUT */
+  .about-section {
+    padding: 5rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .about-section::before {
+    content: 'ROY COHEN';
+    position: absolute;
+    right: -2rem; top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-display);
+    font-size: 8rem;
+    font-weight: 900;
+    color: rgba(0,212,255,0.025);
+    letter-spacing: 10px;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+  .about-text p {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+  .about-text strong { color: var(--amber); font-weight: 600; }
+  .skills-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+  .skill-item {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.2s;
+  }
+  .skill-item:hover { color: var(--cyan); }
+  .skill-item::before { content: '▸'; color: var(--amber); font-size: 0.6rem; }
+
+  /* TERMINAL */
+  .terminal-section { padding: 5rem 0; }
+
+  /* Responsive */
+  @media (max-width: 700px) {
+    .hero-side { display: none; }
+    .about-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  // Mouse parallax on hero grid
+  document.addEventListener('mousemove', e => {
+    const grid = document.querySelector('.hero-grid') as HTMLElement;
+    if (!grid) return;
+    const x = (e.clientX / window.innerWidth - 0.5) * 10;
+    const y = (e.clientY / window.innerHeight - 0.5) * 10;
+    grid.style.transform = `translate(${x}px, ${y}px)`;
+  });
+</script>
