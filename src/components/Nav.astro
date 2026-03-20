@@ -36,7 +36,7 @@ const links = [
   .nav-inner {
     max-width: 768px;
     margin: 0 auto;
-    padding: 0 1.5rem;
+    padding: 0 clamp(1.25rem, 5vw, 1.5rem);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -82,10 +82,9 @@ const links = [
   }
   .theme-btn:hover { color: var(--accent); }
   @media (max-width: 600px) {
-    .nav-inner { padding: 0 1.25rem; }
     .nav-links { gap: 1rem; }
     .nav-links a { font-size: 0.9rem; }
-    .nav-rule { padding: 0 1.25rem; }
+    .nav-rule { padding: 0 clamp(1.25rem, 5vw, 1.5rem); }
   }
 </style>
 
