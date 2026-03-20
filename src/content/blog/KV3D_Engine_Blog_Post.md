@@ -1,131 +1,75 @@
 ---
 title: "KV3D Engine: rethinking KV cache compression for LLM serving"
-description: "Most inference engines optimize kernels and batching. KV3D Engine targets a different lever — the shared structure hiding inside real serving workloads."
+description: "My first real dive into AI, LLMs, and tokens — and what happens when I got curious about where all the memory goes."
 pubDate: 2025-03-20
 tags: ["llm", "inference", "systems", "rust", "kv-cache"]
 ---
 
-# KV3D Engine: Rethinking KV Cache Compression for LLM Serving
+## My first try on AI, LLM and tokens
 
-Most LLM serving stacks still treat the KV cache as request-local state: every session gets its own cache, and compression usually happens block by block. That works, but it misses a major pattern in real workloads. In many production systems, requests share long prompt scaffolds: the same system prompt, the same RAG wrapper, the same agent instructions, the same tool schema. That means large parts of the KV cache are structurally similar across sessions.
+I've spent most of my career as far from AI as you can get — kernel space, network drivers, hardware that lies to you. LLMs always felt like someone else's problem.
 
-**KV3D Engine** is built around a simple idea: instead of compressing every KV cache independently, group related KV blocks, extract the shared structure, and store compact per-session deltas.
+Then I started actually using them. And like any embedded engineer, I couldn't just use a thing. I had to understand what was happening underneath.
 
-## The idea
+So here's where I landed after a few weeks of reading. Starting simple.
 
-The inspiration comes from BM3D-style thinking:
+## What's a token? (for a 3 year old)
 
-- find similar blocks
-- group them together
-- isolate the common signal
-- compress only what is different
+Imagine you're reading a book out loud, but instead of reading one letter at a time, you read little chunks — "the", "dog", "ran". Those chunks are tokens.
 
-For LLM serving, the mapping is:
+An LLM doesn't see words or sentences. It sees a stream of tokens — little pieces of text, sometimes a full word, sometimes just part of one. Everything you type gets chopped into tokens before the model ever touches it.
 
-- **similar image patches** -> similar KV blocks from requests with the same prompt family
-- **shared image structure** -> shared prefix-induced activation structure
-- **noise / residual** -> session-specific variation
+The model reads all your tokens, thinks really hard, and then picks the next token that makes the most sense. Then the next. Then the next. That's how it writes back to you — one token at a time.
 
-In practical terms, KV3D Engine aims to represent cache state like this:
+## What's a KV cache? (also for a 3 year old)
 
-`KV_session ~= KV_shared_prefix + delta_session`
+When the model reads your tokens, it does a lot of math on each one. It figures out how each token relates to every other token — which words matter for understanding which other words.
 
-That makes repeated-prefix workloads much cheaper to serve.
+That math is expensive. And here's the thing: once it's done, you don't need to redo it.
 
-## Why this matters
+So the model saves the results. Key-Value cache — KV cache. Keys and values are the two parts of that math it saves. Every token you've sent, the model has already processed. When you send the next message, it picks up right where it left off without recomputing everything from scratch.
 
-The KV cache is one of the biggest memory costs in modern inference, especially for:
+The problem: that saved math takes up a lot of memory. A lot. Especially when you have hundreds of sessions running at the same time, each with their own history.
 
-- long-context chat
-- enterprise copilots
-- RAG systems
-- agent runtimes
-- multi-session local serving
+## Where it gets interesting
 
-If we can reduce KV memory without hurting output quality, we can improve what companies actually care about:
+Here's what caught my attention.
 
-- more sessions per GPU
-- lower serving cost
-- better prompt reuse
-- faster pause/resume of sessions
-- better hardware utilization
+In most real deployments — enterprise copilots, agent systems, RAG pipelines — most sessions start with the exact same prompt prefix. The same system instructions, the same tool definitions, the same scaffolding. Repeated thousands of times across thousands of sessions.
 
-## What KV3D Engine is
+And yet every session computes and stores its own KV cache for that shared prefix. Independently. Every time.
 
-KV3D Engine is **not a new base model**.
+That felt wasteful in a way I recognized — the kind of redundancy that would get you a comment in a kernel review.
 
-It is an **LLM inference runtime** built around an existing open-model backend such as `llama.cpp`, with a new cache manager that understands shared prefixes and compressed deltas.
+**KV3D Engine** is the idea I started building around: compute the shared prefix cache once, store it as a snapshot, and keep only the session-specific delta per user.
 
-The long-term architecture includes:
+```
+KV_session ≈ KV_shared_prefix + delta_session
+```
 
-- OpenAI-compatible API
-- session scheduler
-- prefix-family detector
-- shared KV snapshot store
-- delta codec
-- GPU / RAM / optional SSD cache tiers
-- benchmark and metrics layer
+More sessions on the same hardware. Less redundant work. Same output quality.
 
-## The first MVP
+## The plan
 
-The first prototype will be intentionally narrow.
+The first version is intentionally narrow:
 
-### Scope
+- `llama.cpp` as the backend
+- exact prefix matching only — no fuzzy clustering yet
+- one shared KV snapshot per prefix family
+- per-session deltas stored separately
+- OpenAI-compatible API on top
+- honest benchmarks against a baseline runtime
 
-- backend: `llama.cpp`
-- one validated GGUF model family
-- exact-prefix sharing only
-- shared prefix snapshot + compressed per-session delta
-- GPU hot cache + host RAM warm cache
-- OpenAI-compatible chat/completions API
-- local CLI for running and testing the engine
+The goal isn't to solve everything. The goal is to prove one claim: *for repeated-prefix workloads, this approach fits more useful session state on the same hardware.*
 
-### What the MVP will prove
+If that holds up, the rest follows.
 
-The goal of MVP is not to solve every compression problem. It is to prove one strong claim:
+## As always — I'll try to build it and break it
 
-> For workloads with repeated prompt prefixes, KV3D Engine can hold more useful session state on the same hardware than a baseline runtime, with acceptable quality retention.
+I don't know yet if this works at the scale I'm imagining. The load bias math might be wrong. The delta representation might not compress as well in practice as it does on paper. The quality guardrails might be too aggressive or not aggressive enough.
 
-### First implementation plan
+That's fine. That's the job.
 
-1. Detect exact shared prompt prefixes.
-2. Compute and store one canonical shared KV snapshot.
-3. Keep request-specific cache state as a smaller delta representation.
-4. Restore the working KV view before decode.
-5. Fall back to raw KV automatically if quality guardrails fail.
+Build it. Break it. Figure out where the real gains come from.
 
-## How we will measure success
-
-The first benchmarks will focus on repeated-prefix workloads such as:
-
-- enterprise assistant sessions
-- RAG prompt templates
-- agent scaffolds with fixed tool instructions
-
-The key metrics are:
-
-- memory per session
-- max concurrent sessions per GPU
-- time to first token after prefix reuse
-- pause/resume latency
-- output quality drift versus baseline
-
-## Why this is interesting
-
-Most inference engines optimize kernels, batching, and model quantization. KV3D Engine focuses on a different lever: **the structure inside serving workloads themselves**.
-
-If many sessions are built from the same prompt skeleton, the runtime should know that and exploit it.
-
-That is the core bet behind KV3D Engine.
-
-## What comes after MVP
-
-If the exact-prefix prototype works well, later versions can add:
-
-- near-prefix clustering
-- grouped block transforms
-- PCA or learned residual bases
-- stronger cold-cache tiers
-- tighter integration with local and server deployment flows
-
-The immediate next step is simple: build the exact-prefix version, benchmark it honestly, and learn where the real gains come from.
+More soon.
