@@ -163,7 +163,21 @@ nm -S demo_gcc.o
 - `B` = `.bss`
 - `D` = `.data`
 
-Exactly what you'd expect. Clang gives the same high-level behavior.
+Clang gives the same result:
+
+```bash
+clang -O2 -c demo_zero.c -o demo_clang.o
+nm -S demo_clang.o
+```
+
+```text
+0000000000000010 0000000000001000 B big
+0000000000000000 0000000000000004 D g_nonzero
+0000000000000004 0000000000000004 B g_uninit
+0000000000000000 0000000000000004 B g_zero
+```
+
+Same section assignments, different internal layout — both put the zero-initialized and uninitialized variables in `.bss` and `g_nonzero` in `.data`.
 
 ## The fun switch: force zeros out of `.bss`
 
@@ -234,3 +248,4 @@ That loop exists because C promises zero-initialized static storage, and `.bss` 
 - [ISO C draft N1570 (PDF)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf) — initialization rules for static storage duration objects (§6.7.9)
 - [ELF(5) man page — linux.die.net](https://man7.org/linux/man-pages/man5/elf.5.html) — `.bss` and `SHT_NOBITS`
 - [GCC manual — `-fno-zero-initialized-in-bss`](https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html#index-fno-zero-initialized-in-bss)
+- [Clang command-line reference — `-fno-zero-initialized-in-bss`](https://clang.llvm.org/docs/ClangCommandLineReference.html#cmdoption-clang-fzero-initialized-in-bss)
