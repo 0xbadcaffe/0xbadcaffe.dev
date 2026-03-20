@@ -6,6 +6,10 @@ const posts = (await getCollection('blog'))
   .filter(p => !p.data.draft)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
+function readingTime(body: string) {
+  return Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
+}
+
 const byYear: Record<string, typeof posts> = {};
 for (const post of posts) {
   const year = post.data.pubDate.getFullYear().toString();
@@ -31,11 +35,13 @@ const years = Object.keys(byYear).sort((a, b) => Number(b) - Number(a));
         <ul class="posts-list">
           {byYear[year].map(post => {
             const date = post.data.pubDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const mins = readingTime(post.body);
             return (
               <li class="post-item">
                 <a href={`/blog/${post.slug}`} class="post-link">
                   <span class="post-date">{date}</span>
                   <span class="post-title">{post.data.title}</span>
+                  <span class="post-mins">{mins} min</span>
                 </a>
               </li>
             );
@@ -82,9 +88,16 @@ const years = Object.keys(byYear).sort((a, b) => Number(b) - Number(a));
   .post-link {
     display: flex;
     align-items: baseline;
-    gap: 1.25rem;
+    gap: 1rem;
     padding: 0.85rem 0;
     transition: color 0.2s;
+  }
+  .post-mins {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-style: italic;
+    white-space: nowrap;
   }
   .post-date {
     font-size: 0.8rem;
