@@ -78,7 +78,7 @@ img { max-width: 100%; display: block; }
 .wrapper {
   max-width: 768px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 clamp(1.25rem, 5vw, 1.5rem);
 }
 
 /* ── NAV ACTIVE ── */
@@ -252,6 +252,5 @@ img { max-width: 100%; display: block; }
 
 /* ── MOBILE ── */
 @media (max-width: 640px) {
-  .wrapper { padding: 0 1.25rem; }
   .prose { font-size: 1rem; }
 }
