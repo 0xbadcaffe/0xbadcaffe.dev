@@ -188,16 +188,6 @@ On Cortex-M with GNU startup code, the loop is much more visible. The startup fi
 
 So when people say "ARM GCC added a loop before `main()`" — what they usually mean is: "The GNU/CMSIS-style startup object is clearing `.bss` so the C rules are true."
 
-## TI: same idea, more explicit
-
-TI's runtime names the startup routine directly: `_c_int00`. That routine brings the C/C++ environment into a valid initialized state before your code runs. TI also documents `--zero_init`, which controls automatic zero-initialization of uninitialized global/static objects.
-
-```text
-reset -> _c_int00 -> initialize runtime state -> zero init -> main
-```
-
-Honestly a much clearer mental model than "the compiler added a loop."
-
 ## "Compiler adds a loop" vs what really happens
 
 The front-end compiler usually does **not** just decide, out of nowhere, to inject a zeroing loop at the top of `main()`.
@@ -241,7 +231,6 @@ That loop exists because C promises zero-initialized static storage, and `.bss` 
 
 ## References
 
-- ISO C draft N1570, initialization rules for static storage duration objects
-- ELF `elf(5)` manual, `.bss` and `SHT_NOBITS`
-- GCC manual, `-fno-zero-initialized-in-bss`
-- TI Arm Clang Compiler Tools docs for `_c_int00` and system initialization
+- [ISO C draft N1570 (PDF)](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf) — initialization rules for static storage duration objects (§6.7.9)
+- [ELF(5) man page — linux.die.net](https://man7.org/linux/man-pages/man5/elf.5.html) — `.bss` and `SHT_NOBITS`
+- [GCC manual — `-fno-zero-initialized-in-bss`](https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html#index-fno-zero-initialized-in-bss)
