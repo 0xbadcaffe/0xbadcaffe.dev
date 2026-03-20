@@ -1,115 +1,94 @@
 ---
 const { current } = Astro.props;
 const links = [
-  { href: '/blog', label: '/logs' },
-  { href: '/projects', label: '/projects' },
-  { href: '/#about', label: '/whoami' },
+  { href: '/blog', label: 'posts' },
+  { href: '/projects', label: 'projects' },
+  { href: '/#about', label: 'about' },
 ];
 ---
 
-<nav>
+<header>
   <div class="nav-inner">
-    <a href="/" class="nav-brand">0x<span>badcaffe</span></a>
-    <ul class="nav-links">
+    <a href="/" class="nav-brand">0xbadcaffe</a>
+    <nav class="nav-links">
       {links.map(l => (
-        <li>
-          <a href={l.href} class={current === l.href ? 'active' : ''}>
-            {l.label}
-          </a>
-        </li>
+        <a href={l.href} class={current === l.href ? 'active-nav' : ''}>
+          {l.label}
+        </a>
       ))}
-    </ul>
-    <div class="nav-right">
-      <div class="nav-status">
-        <span class="status-dot"></span>ONLINE
-      </div>
       <button class="theme-btn" id="theme-toggle" aria-label="Toggle theme" title="Toggle light/dark">
         <span id="theme-icon">◑</span>
       </button>
-    </div>
+    </nav>
   </div>
-</nav>
+  <div class="nav-rule"><hr /></div>
+</header>
 
 <style>
-  nav {
+  header {
     position: fixed;
     top: 0; left: 0; right: 0;
-    z-index: 9995;
-    border-bottom: 1px solid var(--border);
+    z-index: 100;
     background: var(--nav-bg);
-    backdrop-filter: blur(16px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
   .nav-inner {
-    max-width: 900px;
+    max-width: 768px;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 56px;
+    height: 52px;
   }
   .nav-brand {
-    font-family: var(--font-display);
-    font-size: 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 1rem;
     font-weight: 700;
-    color: var(--cyan);
-    text-shadow: 0 0 12px var(--cyan);
-    letter-spacing: 2px;
-    text-decoration: none;
-    transition: text-shadow 0.3s;
+    color: var(--text);
+    letter-spacing: 1px;
+    transition: color 0.2s;
   }
-  .nav-brand:hover { text-shadow: 0 0 20px var(--cyan); }
-  .nav-brand span { color: var(--amber); text-shadow: 0 0 12px var(--amber); }
+  .nav-brand:hover { color: var(--accent); }
   .nav-links {
     display: flex;
-    gap: 2rem;
-    list-style: none;
+    align-items: center;
+    gap: 1.5rem;
   }
   .nav-links a {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
     color: var(--text-dim);
-    font-size: 0.78rem;
-    letter-spacing: 2px;
-    transition: color 0.2s, text-shadow 0.2s;
+    transition: color 0.2s;
   }
-  .nav-links a:hover,
-  .nav-links a.active {
-    color: var(--amber);
-    text-shadow: 0 0 8px var(--amber);
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active-nav { color: var(--accent); }
+  .nav-rule {
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
   }
-  .nav-right {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  .nav-status {
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    letter-spacing: 1px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  .nav-rule hr {
+    border: none;
+    border-top: 1px solid var(--border);
   }
   .theme-btn {
     background: none;
-    border: 1px solid var(--border);
+    border: none;
     color: var(--text-dim);
-    font-size: 0.85rem;
-    width: 28px; height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 1rem;
     cursor: pointer;
-    transition: color 0.2s, border-color 0.2s;
-    padding: 0;
+    padding: 0.25rem;
+    transition: color 0.2s;
+    line-height: 1;
   }
-  .theme-btn:hover {
-    color: var(--cyan);
-    border-color: var(--cyan);
-  }
+  .theme-btn:hover { color: var(--accent); }
   @media (max-width: 600px) {
-    .nav-status { display: none; }
-    .nav-links { gap: 1rem; }
     .nav-inner { padding: 0 1.25rem; }
+    .nav-links { gap: 1rem; }
+    .nav-links a { font-size: 0.85rem; }
+    .nav-rule { padding: 0 1.25rem; }
   }
 </style>
 
@@ -128,7 +107,6 @@ const links = [
     }
   }
 
-  // Load saved preference
   applyTheme(localStorage.getItem('theme') === 'light');
 
   btn?.addEventListener('click', () => {
