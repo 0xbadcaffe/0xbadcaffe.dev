@@ -56,6 +56,9 @@
 *, *::before, *::after {
   margin: 0; padding: 0; box-sizing: border-box;
 }
+pre, code, kbd, samp {
+  font-family: inherit;
+}
 
 html { scroll-behavior: smooth; overflow-y: scroll; }
 
