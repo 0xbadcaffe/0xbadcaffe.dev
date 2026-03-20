@@ -16,13 +16,6 @@ const posts = (await getCollection('blog'))
         <div class="intro-content">
           <div class="intro-eyebrow">kernel // networking // reverse engineering</div>
           <h1 class="intro-handle">0xbadcaffe</h1>
-          <p class="intro-bio">
-            for (;;) &#123;<br />
-            &nbsp;&nbsp;Break();<br />
-            &nbsp;&nbsp;Build();<br />
-            &nbsp;&nbsp;DrinkCoffee();<br />
-            &#125;
-          </p>
           <div class="intro-links">
             <a href="https://github.com/0xbadcaffe" target="_blank" rel="noopener">github</a>
             <span class="sep">//</span>
@@ -40,6 +33,13 @@ const posts = (await getCollection('blog'))
             <div>0xDEADBEEF</div>
             <div>0x00000000</div>
           </div>
+          <p class="intro-bio">
+            for (;;) &#123;<br />
+            &nbsp;&nbsp;Break();<br />
+            &nbsp;&nbsp;Build();<br />
+            &nbsp;&nbsp;DrinkCoffee();<br />
+            &#125;
+          </p>
         </div>
       </div>
     </section>
@@ -127,9 +127,10 @@ const posts = (await getCollection('blog'))
 
   /* ── INTRO ── */
   .intro {
-    padding-bottom: 4rem;
+    padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--border);
-    margin-bottom: 4rem;
+    margin-bottom: 3rem;
+    position: relative;
   }
   .intro-row {
     display: flex;
@@ -179,17 +180,23 @@ const posts = (await getCollection('blog'))
 
   /* Hex display */
   .intro-hex {
-    flex-shrink: 0;
-    text-align: right;
-    padding-top: 0.5rem;
+    position: absolute;
+    right: 0;
+    top: 0;
   }
   .hex-display {
     font-size: 0.7rem;
     color: var(--text-dim);
     line-height: 2;
     letter-spacing: 1px;
+    text-align: right;
   }
   .hex-display .c { color: var(--cyan); text-shadow: 0 0 8px var(--cyan); }
+  .intro-hex .intro-bio {
+    margin-top: 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+  }
 
   /* ── WRITING ── */
   .writing { margin-bottom: 4rem; }
