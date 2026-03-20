@@ -2,7 +2,7 @@
 title: "KV3D Engine: rethinking KV cache compression for LLM serving"
 description: "My first real dive into AI, LLMs, and tokens — and what happens when I got curious about where all the memory goes."
 pubDate: 2026-03-20
-tags: ["llm", "inference", "systems", "rust", "kv-cache"]
+tags: ["llm", "inference", "systems", "kv-cache"]
 ---
 
 ## My first try on AI, LLM and tokens
