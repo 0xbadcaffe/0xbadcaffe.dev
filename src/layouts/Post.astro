@@ -13,79 +13,28 @@ const date = pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long
 ---
 
 <Base title={title} description={description} current="/blog">
-  <article class="wrapper post-wrap">
-    <header class="post-header">
-      <h1 class="post-title">{title}</h1>
-      <div class="post-meta">
-        <time class="post-date" datetime={pubDate.toISOString()}>{date}</time>
-        {tags.length > 0 && (
-          <div class="post-tags">
-            {tags.map(t => <span class="tag">{t}</span>)}
-          </div>
-        )}
-      </div>
-      {description && <p class="post-desc">{description}</p>}
-      <hr class="post-divider" />
-    </header>
+  <article class="py-10 max-w-3xl mx-auto px-4">
+    <h1 class="text-2xl font-bold text-[var(--accent)] sm:text-3xl leading-tight mb-3">
+      {title}
+    </h1>
+    <div class="flex items-center gap-3 flex-wrap mb-3">
+      <time class="text-sm text-[var(--text-dim)] italic" datetime={pubDate.toISOString()}>{date}</time>
+      {tags.length > 0 && (
+        <div class="flex gap-2 flex-wrap">
+          {tags.map(t => <span class="tag">{t}</span>)}
+        </div>
+      )}
+    </div>
+    {description && <p class="text-[var(--text-dim)] mb-6 leading-relaxed">{description}</p>}
+    <hr class="border-[var(--border)] mb-8" />
 
     <div class="prose">
       <slot />
     </div>
 
-    <footer class="post-footer">
-      <hr class="post-divider" />
-      <a href="/blog" class="back-link">← back to posts</a>
+    <footer class="mt-10">
+      <hr class="border-[var(--border)] mb-6" />
+      <a href="/blog" class="text-sm text-[var(--accent)] underline underline-offset-3 hover:decoration-2">← back to posts</a>
     </footer>
   </article>
 </Base>
-
-<style>
-  .post-wrap {
-    padding: 3rem 0 6rem;
-  }
-  .post-header {
-    margin-bottom: 2.5rem;
-  }
-  .post-title {
-    font-family: var(--font-mono);
-    font-size: clamp(1.3rem, 4vw, 1.9rem);
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1.3;
-    margin-bottom: 0.75rem;
-  }
-  .post-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    margin-bottom: 0.75rem;
-  }
-  .post-date {
-    font-size: 0.875rem;
-    color: var(--text-dim);
-    font-style: italic;
-  }
-  .post-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; }
-  .post-desc {
-    font-size: 1rem;
-    color: var(--text-dim);
-    line-height: 1.65;
-    margin-top: 0.5rem;
-  }
-  .post-divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 1.5rem 0;
-  }
-  .post-footer {
-    margin-top: 3rem;
-  }
-  .back-link {
-    font-size: 0.875rem;
-    color: var(--accent);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-  .back-link:hover { text-decoration-thickness: 2px; }
-</style>

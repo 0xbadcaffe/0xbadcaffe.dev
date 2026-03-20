@@ -22,129 +22,41 @@ const projects = [
 ---
 
 <Base title="/projects" current="/projects">
-  <div class="wrapper page-layout">
+  <section class="pt-10 pb-16">
+    <header class="mb-8">
+      <h1 class="text-2xl font-bold mb-2">projects</h1>
+      <p class="text-sm text-[var(--text-dim)] italic">things i build when the hardware cooperates.</p>
+    </header>
 
-    <div class="section-header">
-      <span class="section-label">~/projects</span>
-      <div class="section-line"></div>
-    </div>
+    <hr class="border-[var(--border)] mb-8" />
 
-    <p class="page-subtitle">things i build when the hardware cooperates.</p>
-
-    <div class="projects-grid">
+    <div class="space-y-4">
       {projects.map(p => (
-        <a class="project-card" href={p.url} target="_blank" rel="noopener">
-          <div class="project-header">
-            <div class="project-name-row">
-              <span class="project-prompt">~/</span>
-              <span class="project-name">{p.name}</span>
+        <a
+          href={p.url}
+          target="_blank"
+          rel="noopener"
+          class="block border border-[var(--border)] p-6 hover:border-[var(--accent)] transition-colors group"
+        >
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-baseline gap-1">
+              <span class="text-sm text-[var(--text-dim)]">~/</span>
+              <span class="font-bold text-[var(--accent)] tracking-wide group-hover:underline decoration-dashed underline-offset-4">{p.name}</span>
             </div>
-            <div class={`project-status status-${p.status}`}>
-              <span class="status-dot-small"></span>
+            <div class="flex items-center gap-1.5 text-xs uppercase tracking-widest text-emerald-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" style="animation: pulse 2s infinite" />
               {p.status}
             </div>
           </div>
-          <p class="project-desc">{p.description}</p>
-          <div class="project-footer">
-            <div class="project-tags">
+          <p class="text-sm text-[var(--text-dim)] leading-relaxed mb-4">{p.description}</p>
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="flex gap-2 flex-wrap">
               {p.tags.map(t => <span class="tag">{t}</span>)}
             </div>
-            <span class="project-lang">{p.lang}</span>
+            <span class="text-xs text-[var(--accent)] border border-[var(--border)] px-2 py-0.5 uppercase tracking-wide">{p.lang}</span>
           </div>
         </a>
       ))}
     </div>
-
-  </div>
+  </section>
 </Base>
-
-<style>
-  .page-layout { padding: 4rem 2rem 6rem; }
-  .page-subtitle {
-    font-size: 0.8rem;
-    color: var(--text-dim);
-    letter-spacing: 1px;
-    margin-bottom: 3rem;
-    margin-top: -1rem;
-    font-style: italic;
-  }
-  .projects-grid { display: grid; gap: 1px; }
-  .project-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    padding: 2rem;
-    display: block;
-    transition: all 0.3s;
-    position: relative;
-    overflow: hidden;
-  }
-  .project-card::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 2px;
-    background: var(--cyan);
-    box-shadow: 0 0 10px var(--cyan);
-    transform: scaleY(0);
-    transition: transform 0.3s;
-  }
-  .project-card:hover { background: var(--bg3); border-color: rgba(0,212,255,0.25); }
-  .project-card:hover::before { transform: scaleY(1); }
-  .project-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-  }
-  .project-name-row { display: flex; align-items: baseline; gap: 0.2rem; }
-  .project-prompt { font-size: 0.8rem; color: var(--text-dim); }
-  .project-name {
-    font-family: var(--font-display);
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--cyan);
-    letter-spacing: 2px;
-    transition: text-shadow 0.3s;
-  }
-  .project-card:hover .project-name { text-shadow: 0 0 12px var(--cyan); }
-  .project-status {
-    font-size: 0.6rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-  .status-dot-small {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-  }
-  .status-active { color: #00ff88; }
-  .status-active .status-dot-small { background: #00ff88; box-shadow: 0 0 6px #00ff88; animation: pulse 2s infinite; }
-  .status-maintained { color: var(--amber); }
-  .status-maintained .status-dot-small { background: var(--amber); }
-  .status-archived { color: var(--text-dim); }
-  .status-archived .status-dot-small { background: var(--text-dim); }
-  .project-desc {
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    color: var(--text-dim);
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-  }
-  .project-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .project-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-  .project-lang {
-    font-size: 0.65rem;
-    color: var(--amber);
-    letter-spacing: 2px;
-    border: 1px solid rgba(255,140,0,0.2);
-    padding: 0.15rem 0.5rem;
-  }
-</style>

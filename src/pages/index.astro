@@ -13,210 +13,65 @@ function readingTime(body: string) {
 ---
 
 <Base title="Home" current="/">
-
-  <div class="wrapper page-wrap">
-
-    <!-- HERO -->
-    <section class="hero">
-      <div class="hero-top">
-        <h1 class="hero-title">0xbadcaffe</h1>
-        <p class="hero-sub">kernel // networking // reverse engineering</p>
-      </div>
-      <pre class="hero-bio">for (;;) &#123;
+  <section class="pt-10 pb-6">
+    <h1 class="text-3xl font-bold mb-1">0xbadcaffe</h1>
+    <p class="text-[var(--text-dim)] text-sm uppercase tracking-widest mb-4">kernel // networking // reverse engineering</p>
+    <pre class="text-[var(--text-dim)] text-sm leading-relaxed bg-transparent border-none p-0 mb-4">for (;;) &#123;
   Break();
   Build();
   DrinkCoffee();
 &#125;</pre>
-      <div class="hero-links">
-        <a href="https://github.com/0xbadcaffe" target="_blank" rel="noopener">github</a>
-        <span class="sep">/</span>
-        <a href="/rss.xml">rss</a>
-        <span class="sep">/</span>
-        <a href="/#about">about</a>
-      </div>
-    </section>
+    <div class="flex items-center gap-2 text-sm">
+      <a href="https://github.com/0xbadcaffe" target="_blank" rel="noopener" class="text-[var(--accent)] underline decoration-dashed underline-offset-4 hover:decoration-2">github</a>
+      <span class="text-[var(--text-dim)]">/</span>
+      <a href="/rss.xml" class="text-[var(--accent)] underline decoration-dashed underline-offset-4 hover:decoration-2">rss</a>
+      <span class="text-[var(--text-dim)]">/</span>
+      <a href="/#about" class="text-[var(--accent)] underline decoration-dashed underline-offset-4 hover:decoration-2">about</a>
+    </div>
+  </section>
 
-    <hr class="divider" />
+  <hr class="border-[var(--border)]" />
 
-    <!-- POSTS -->
-    <section class="posts">
-      <ul>
-        {posts.map(post => {
-          const d = post.data.pubDate;
-          const date = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
-          const mins = readingTime(post.body);
-          return (
-            <li class="post-item">
-              <a href={`/blog/${post.slug}`} class="post-title-link">
-                <h3 class="post-title">{post.data.title}</h3>
-              </a>
-              <div class="post-meta">
-                <time>{date}</time>
-                <span class="meta-dot">•</span>
-                <span class="read-time">{mins} min read</span>
-              </div>
-              <p class="post-desc">{post.data.description}</p>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
+  <section class="py-8">
+    <ul class="space-y-0">
+      {posts.map(post => {
+        const d = post.data.pubDate;
+        const date = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+        const mins = readingTime(post.body);
+        return (
+          <li class="py-5 border-b border-[var(--border)] last:border-0">
+            <a href={`/blog/${post.slug}`} class="group block">
+              <h3 class="text-lg font-semibold text-[var(--accent)] underline decoration-dashed underline-offset-4 decoration-[1px] group-hover:decoration-2 transition-all mb-1">
+                {post.data.title}
+              </h3>
+            </a>
+            <div class="flex items-center gap-2 mb-2 text-sm text-[var(--text-dim)] italic">
+              <time>{date}</time>
+              <span>•</span>
+              <span>{mins} min read</span>
+            </div>
+            <p class="text-sm text-[var(--text-dim)] leading-relaxed">{post.data.description}</p>
+          </li>
+        );
+      })}
+    </ul>
+  </section>
 
-    <hr class="divider" />
+  <hr class="border-[var(--border)]" />
 
-    <!-- ABOUT -->
-    <section class="about" id="about">
-      <h2 class="about-title">$ whoami</h2>
-      <p>
-        This is a logbook. What I built, what broke, what I learned. No schedule — just notes when something is worth keeping. I hope you had a !(0xbadcaffe).
-      </p>
-      <div class="skills">
-        {[
-          'Linux Kernel', 'Rust', 'Packet Analysis',
-          'Reverse Engineering', 'FPGA / HDL', 'Yocto',
-          'libpcap', 'Embedded C', 'Network Protocols',
-        ].map(s => <span class="skill">{s}</span>)}
-      </div>
-    </section>
-
-  </div>
-
+  <section class="py-8 max-w-xl" id="about">
+    <h2 class="text-sm uppercase tracking-widest text-[var(--accent)] mb-5">$ whoami</h2>
+    <p class="text-[var(--text-dim)] leading-relaxed mb-4">
+      This is a logbook. What I built, what broke, what I learned. No schedule — just notes when something is worth keeping. I hope you had a !(0xbadcaffe).
+    </p>
+    <div class="flex flex-wrap gap-2 mt-4">
+      {[
+        'Linux Kernel', 'Rust', 'Packet Analysis',
+        'Reverse Engineering', 'FPGA / HDL', 'Yocto',
+        'libpcap', 'Embedded C', 'Network Protocols',
+      ].map(s => (
+        <span class="text-xs text-[var(--text-dim)] border border-[var(--border)] px-2 py-0.5 uppercase tracking-wide">{s}</span>
+      ))}
+    </div>
+  </section>
 </Base>
-
-<style>
-  .page-wrap {
-    padding: 3rem 0 6rem;
-  }
-
-  /* ── HERO ── */
-  .hero {
-    padding: 2rem 0 2.5rem;
-  }
-  .hero-top {
-    margin-bottom: 1rem;
-  }
-  .hero-title {
-    font-size: clamp(1.8rem, 5vw, 2.5rem);
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: 1px;
-    margin-bottom: 0.4rem;
-  }
-  .hero-sub {
-    font-size: 0.875rem;
-    color: var(--text-dim);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-  }
-  .hero-bio {
-    font-size: 1rem;
-    color: var(--text-dim);
-    line-height: 1.7;
-    margin-bottom: 1.25rem;
-    background: none;
-    border: none;
-    padding: 0;
-  }
-  .hero-links {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-size: 1rem;
-  }
-  .hero-links a {
-    color: var(--accent);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    text-decoration-thickness: 1px;
-  }
-  .hero-links a:hover { text-decoration-thickness: 2px; }
-  .sep { color: var(--text-dim); }
-
-  /* ── DIVIDER ── */
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 0;
-  }
-
-  /* ── POSTS ── */
-  .posts {
-    padding: 2.5rem 0;
-  }
-  .posts ul { list-style: none; }
-  .post-item {
-    padding: 1.5rem 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .post-item:last-child { border-bottom: none; }
-  .post-title-link { display: inline-block; }
-  .post-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--accent);
-    margin-bottom: 0.4rem;
-    text-decoration: underline;
-    text-decoration-style: dashed;
-    text-underline-offset: 4px;
-    text-decoration-thickness: 1px;
-    transition: text-decoration-thickness 0.15s;
-  }
-  .post-title-link:hover .post-title { text-decoration-thickness: 2px; }
-  .post-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-bottom: 0.5rem;
-  }
-  .post-meta time, .read-time {
-    font-size: 0.875rem;
-    color: var(--text-dim);
-    font-style: italic;
-  }
-  .meta-dot { color: var(--text-dim); font-size: 0.875rem; }
-  .post-desc {
-    font-size: 1rem;
-    color: var(--text-dim);
-    line-height: 1.6;
-  }
-
-  /* ── ABOUT ── */
-  .about {
-    padding: 2.5rem 0;
-    max-width: 600px;
-  }
-  .about-title {
-    font-size: 0.875rem;
-    color: var(--accent);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 1.25rem;
-  }
-  .about p {
-    font-size: 1rem;
-    color: var(--text-dim);
-    line-height: 1.8;
-    margin-bottom: 1rem;
-  }
-  .skills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 1.25rem;
-  }
-  .skill {
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    border: 1px solid var(--border);
-    padding: 0.2rem 0.6rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-
-  /* ── MOBILE ── */
-  @media (max-width: 640px) {
-    .page-wrap { padding: 2rem 0 4rem; }
-    .post-tags { display: none; }
-  }
-</style>

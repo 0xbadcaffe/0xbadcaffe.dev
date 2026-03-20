@@ -7,107 +7,51 @@ const links = [
 ];
 ---
 
-<header>
-  <div class="nav-inner">
-    <a href="/" class="nav-brand">0xbadcaffe</a>
-    <nav class="nav-links">
+<header class="sticky top-0 z-50 bg-[var(--nav-bg)] backdrop-blur-sm border-b border-[var(--border)]">
+  <div class="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
+    <a href="/" class="text-lg font-bold hover:text-[var(--accent)] transition-colors">
+      0xbadcaffe
+    </a>
+    <nav class="flex items-center gap-6">
       {links.map(l => (
-        <a href={l.href} class={current === l.href ? 'active-nav' : ''}>
+        <a
+          href={l.href}
+          class={`text-[var(--text-dim)] hover:text-[var(--foreground)] transition-colors ${current === l.href ? 'active-nav' : ''}`}
+        >
           {l.label}
         </a>
       ))}
-      <button class="theme-btn" id="theme-toggle" aria-label="Toggle theme" title="Toggle light/dark">
+      <button
+        id="theme-toggle"
+        aria-label="Toggle theme"
+        class="text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors cursor-pointer"
+      >
         <span id="theme-icon">◑</span>
       </button>
     </nav>
   </div>
-  <div class="nav-rule"><hr /></div>
 </header>
-
-<style>
-  header {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    background: var(--nav-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-  }
-  .nav-inner {
-    max-width: 768px;
-    margin: 0 auto;
-    padding: 0 clamp(1.25rem, 5vw, 1.5rem);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 52px;
-  }
-  .nav-brand {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--text);
-    transition: color 0.2s;
-  }
-  .nav-brand:hover { color: var(--accent); }
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-  .nav-links a {
-    font-size: 1rem;
-    color: var(--text-dim);
-    transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--text); }
-  .nav-links a.active-nav { color: var(--accent); }
-  .nav-rule {
-    max-width: 768px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-  }
-  .nav-rule hr {
-    border: none;
-    border-top: 1px solid var(--border);
-  }
-  .theme-btn {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-size: 1rem;
-    cursor: pointer;
-    padding: 0.25rem;
-    transition: color 0.2s;
-    line-height: 1;
-  }
-  .theme-btn:hover { color: var(--accent); }
-  @media (max-width: 600px) {
-    .nav-links { gap: 1rem; }
-    .nav-links a { font-size: 0.9rem; }
-    .nav-rule { padding: 0 clamp(1.25rem, 5vw, 1.5rem); }
-  }
-</style>
 
 <script>
   const btn = document.getElementById('theme-toggle');
   const icon = document.getElementById('theme-icon');
   const root = document.documentElement;
 
-  function applyTheme(light: boolean) {
-    if (light) {
-      root.setAttribute('data-theme', 'light');
-      if (icon) icon.textContent = '○';
+  function applyTheme(dark: boolean) {
+    if (dark) {
+      root.setAttribute('data-theme', 'dark');
+      if (icon) icon.textContent = '◑';
     } else {
       root.removeAttribute('data-theme');
-      if (icon) icon.textContent = '◑';
+      if (icon) icon.textContent = '○';
     }
   }
 
-  applyTheme(localStorage.getItem('theme') === 'light');
+  applyTheme(localStorage.getItem('theme') !== 'light');
 
   btn?.addEventListener('click', () => {
-    const isLight = root.getAttribute('data-theme') === 'light';
-    applyTheme(!isLight);
-    localStorage.setItem('theme', isLight ? 'dark' : 'light');
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    applyTheme(!isDark);
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
   });
 </script>
