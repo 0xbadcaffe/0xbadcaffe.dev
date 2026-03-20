@@ -124,12 +124,6 @@ If that holds up, the BM3D-inspired phase follows.
 
 I'm building this at [github.com/0xbadcaffe/kv3d](https://github.com/0xbadcaffe/kv3d). Early days. The architecture document covers the full design including the roadmap from exact-prefix MVP through collaborative block codec.
 
-## As always — I'll try to build it and break it
-
 I don't know yet if this works at the scale I'm imagining. The delta representation might not compress as well in practice as it does on paper. The right transform for grouped KV blocks might be none of the ones I listed. The quality guardrails might be too aggressive or not aggressive enough.
 
-That's fine. That's the job.
-
-Build it. Break it. Figure out where the real gains come from.
-
-More soon.
+More on this as it develops.
