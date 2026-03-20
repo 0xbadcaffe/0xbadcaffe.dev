@@ -1,35 +1,31 @@
 ---
-title: "Writing a Packet Analyzer in Rust with Ratatui"
-description: "Building packrat — a Wireshark-style TUI. What the kernel tells you that libpcap doesn't."
+title: "packrat — building a packet analyzer in Rust because I was annoyed"
+description: "Wireshark is too heavy and tcpdump is too blind. Building something in between, with a TUI and an ASCII rat."
 pubDate: 2025-03-01
-tags: ["rust", "ratatui", "networking", "kernel"]
+tags: ["rust", "ratatui", "networking", "linux"]
 ---
 
-Every few years I get frustrated enough with existing tools to build my own. This time it was packet analysis.
+Every few years I get frustrated enough with existing tools to write my own. This time it was packet capture.
 
-Wireshark is powerful but heavy. `tcpdump` is fast but blind. I wanted something in between — a TUI I could live inside, with the right level of detail for embedded network debugging.
+The problem: I'm debugging network behavior on an embedded board. Wireshark is overkill and won't run there. `tcpdump` gives me raw text I have to pipe somewhere. I want something I can SSH into a device, run, and actually *see* what's happening — timing, flows, payload strings — without piping through three other tools.
 
-So I built **packrat**.
+So I built packrat. It's a TUI packet analyzer written in Rust.
 
-## The architecture
+## why Rust
 
-Packrat is a Rust workspace with five tabs:
+Mostly because I wanted to learn it properly and this felt like the right kind of project. Low-level, performance matters a bit, good opportunity to fight the borrow checker in interesting ways. I was also tired of writing C networking code where every second line is a potential use-after-free.
 
-- **Packets** — live capture with filtering
-- **Analysis** — protocol breakdown per packet
-- **Strings** — printable string extraction from payloads
-- **Dynamic** — flow statistics updated in real time
-- **Visualize** — sparklines and traffic graphs
+The UI layer is [Ratatui](https://ratatui.rs), which gives you full terminal control without fighting ncurses. It's genuinely good. The widget model takes an afternoon to understand and then mostly stays out of your way.
 
-The UI layer is [Ratatui](https://ratatui.rs), which gives you full terminal control without fighting ncurses. The capture backend is optional: you can use raw sockets or link against libpcap.
+## the capture backend
 
-## What libpcap doesn't tell you
+This is the part I spent the most time on.
 
-When you capture via libpcap, you're seeing packets *after* the kernel has already made decisions about them. VLAN tags may be stripped. Timestamps are userspace-approximated. For most use cases this is fine.
+The obvious approach is libpcap. It works, it's portable, everyone uses it. For most purposes it's fine. But libpcap gives you packets *after* the kernel has already touched them — VLAN tags may be stripped, timestamps are approximated in userspace, and you're not seeing exactly what hit the wire.
 
-For embedded debugging — where you're chasing timing issues between a network interface driver and an IIO subsystem — it's not fine.
+For the embedded debugging I care about, that's not good enough. I need to know *when* something happened, not a userspace approximation of when something happened.
 
-The solution is a `AF_PACKET` socket with `PACKET_MMAP`, which gives you kernel-timestamped frames in a shared memory ring buffer. packrat uses this by default when libpcap is not explicitly requested.
+The answer is `AF_PACKET` with `PACKET_MMAP`. You create a raw socket, set up a shared memory ring buffer between your process and the kernel, and get hardware-timestamped frames directly — no copying until you decide to copy them. On NICs that support hardware timestamping, you get the actual time the frame was received by the NIC. On everything else, you get software timestamps with much better accuracy than anything userspace could achieve.
 
 ```rust
 let sock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL) as i32)?;
@@ -37,9 +33,23 @@ setsockopt(sock, SOL_PACKET, PACKET_RX_RING, &tp)?;
 let ring = mmap(sock, tp.tp_block_size * tp.tp_block_nr)?;
 ```
 
-The timestamps you get from `PACKET_MMAP` are hardware-timestamped on NICs that support it, and software-timestamped (with much better accuracy than userspace) on everything else.
+packrat uses this by default and falls back to libpcap if you explicitly request it.
 
-## The splash screen
+## the tabs
+
+The UI has five tabs. This is probably three too many but I've used all of them:
+
+**Packets** — live capture table with BPF filter input. The thing you look at 90% of the time.
+
+**Analysis** — protocol dissection for the selected packet. Ethernet → IP → TCP, field by field.
+
+**Strings** — printable strings extracted from the payload. Useful more often than I expected.
+
+**Dynamic** — per-flow statistics updating in real time. Packet counts, byte totals, rate estimates.
+
+**Visualize** — sparklines. I built these last and they're the feature I show people first.
+
+## the splash screen
 
 There's an ASCII rat on startup. It's non-negotiable.
 
@@ -50,13 +60,10 @@ There's an ASCII rat on startup. It's non-negotiable.
   packrat v0.1.0
 ```
 
-It disappears after 800ms. I timed it precisely so it's long enough to be noticed and short enough not to be annoying.
+It stays for 800ms. Long enough that you notice it, short enough that it's not annoying. I tuned this carefully.
 
-## What's next
+## what's still rough
 
-- BPF filter input in the UI
-- Export to pcap format
-- Better IPv6 support
-- Publishing to crates.io
+BPF filter input in the UI exists but error handling is incomplete. Export to pcap is on the list. IPv6 support is minimal. The ring buffer management in the capture backend has one edge case I haven't fully tracked down yet.
 
-The source will be on GitHub once I clean up the worst parts. Some of it is embarrassing.
+Source is on [GitHub](https://github.com/0xbadcaffe/packrat) when I clean up the worst parts. I keep saying that.
