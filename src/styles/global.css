@@ -33,7 +33,7 @@
   --border:   rgba(171, 75, 8, 0.4);
 
   --font-body: 'Atkinson', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+  --font-mono: 'Atkinson', ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
   --font-display: var(--font-mono);
 
   --nav-bg: rgba(33, 39, 55, 0.92);
@@ -121,7 +121,7 @@ img { max-width: 100%; display: block; }
 
 /* ── TAG ── */
 .tag {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-family: var(--font-mono);
   color: var(--accent);
   border: 1px solid rgba(255, 107, 1, 0.35);
@@ -147,8 +147,8 @@ img { max-width: 100%; display: block; }
 .t-dot:nth-child(1) { background: #ff5f57; }
 .t-dot:nth-child(2) { background: #febc2e; }
 .t-dot:nth-child(3) { background: #28c840; }
-.t-title { font-size: 0.65rem; color: var(--text-dim); margin-left: auto; letter-spacing: 1px; font-family: var(--font-mono); }
-.terminal-body { padding: 1.25rem 1.5rem; font-size: 0.85rem; line-height: 1.9; font-family: var(--font-mono); }
+.t-title { font-size: 0.75rem; color: var(--text-dim); margin-left: auto; letter-spacing: 1px; font-family: var(--font-mono); }
+.terminal-body { padding: 1.25rem 1.5rem; font-size: 0.875rem; line-height: 1.9; font-family: var(--font-mono); }
 .t-prompt { color: var(--accent); }
 .t-output { color: var(--text-dim); padding-left: 1rem; }
 .t-highlight { color: var(--accent); }
@@ -171,7 +171,7 @@ img { max-width: 100%; display: block; }
 }
 .section-label {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--accent);
   letter-spacing: 3px;
@@ -187,7 +187,7 @@ img { max-width: 100%; display: block; }
 /* ── PROSE ── */
 .prose {
   font-family: var(--font-body);
-  font-size: 1.05rem;
+  font-size: 1rem;
   line-height: 1.85;
   color: var(--text);
   max-width: 680px;
