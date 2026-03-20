@@ -20,104 +20,33 @@ const years = Object.keys(byYear).sort((a, b) => Number(b) - Number(a));
 ---
 
 <Base title="posts" current="/blog">
-  <div class="wrapper page-wrap">
-
-    <header class="page-header">
-      <h1 class="page-title">posts</h1>
-      <p class="page-sub">kernel internals, packet analysis, reverse engineering, embedded systems.</p>
+  <section class="pt-10 pb-16">
+    <header class="mb-8">
+      <h1 class="text-2xl font-bold mb-2">posts</h1>
+      <p class="text-sm text-[var(--text-dim)] italic">kernel internals, packet analysis, reverse engineering, embedded systems.</p>
     </header>
 
-    <hr class="divider" />
+    <hr class="border-[var(--border)] mb-8" />
 
     {years.map(year => (
-      <section class="year-group">
-        <h2 class="year-label">{year}</h2>
-        <ul class="posts-list">
+      <div class="mb-10">
+        <h2 class="text-xs uppercase tracking-widest text-[var(--accent)] mb-3">{year}</h2>
+        <ul>
           {byYear[year].map(post => {
             const date = post.data.pubDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             const mins = readingTime(post.body);
             return (
-              <li class="post-item">
-                <a href={`/blog/${post.slug}`} class="post-link">
-                  <span class="post-date">{date}</span>
-                  <span class="post-title">{post.data.title}</span>
-                  <span class="post-mins">{mins} min</span>
+              <li class="border-b border-[var(--border)] last:border-0">
+                <a href={`/blog/${post.slug}`} class="flex items-baseline gap-3 py-3 group">
+                  <span class="text-sm text-[var(--text-dim)] italic whitespace-nowrap w-14 shrink-0">{date}</span>
+                  <span class="text-[var(--accent)] underline decoration-dashed underline-offset-4 decoration-[1px] group-hover:decoration-2 transition-all flex-1">{post.data.title}</span>
+                  <span class="text-sm text-[var(--text-dim)] italic whitespace-nowrap ml-auto">{mins} min</span>
                 </a>
               </li>
             );
           })}
         </ul>
-      </section>
+      </div>
     ))}
-
-  </div>
+  </section>
 </Base>
-
-<style>
-  .page-wrap { padding: 3rem 0 6rem; }
-  .page-header { padding-bottom: 1.5rem; }
-  .page-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 0.5rem;
-  }
-  .page-sub {
-    font-size: 1rem;
-    color: var(--text-dim);
-    font-style: italic;
-  }
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 0 0 2rem;
-  }
-  .year-group { margin-bottom: 2.5rem; }
-  .year-label {
-    font-size: 0.875rem;
-    color: var(--accent);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-bottom: 0.75rem;
-  }
-  .posts-list { list-style: none; }
-  .post-item { border-bottom: 1px solid var(--border); }
-  .post-item:last-child { border-bottom: none; }
-  .post-link {
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    padding: 0.85rem 0;
-    transition: color 0.2s;
-  }
-  .post-mins {
-    margin-left: auto;
-    font-size: 0.875rem;
-    color: var(--text-dim);
-    font-style: italic;
-    white-space: nowrap;
-  }
-  .post-date {
-    font-size: 0.875rem;
-    color: var(--text-dim);
-    font-style: italic;
-    white-space: nowrap;
-    min-width: 60px;
-  }
-  .post-title {
-    font-size: 1rem;
-    color: var(--accent);
-    font-weight: 500;
-    text-decoration: underline;
-    text-decoration-style: dashed;
-    text-underline-offset: 4px;
-    text-decoration-thickness: 1px;
-    transition: text-decoration-thickness 0.15s;
-  }
-  .post-link:hover .post-title { text-decoration-thickness: 2px; }
-
-  @media (max-width: 640px) {
-    .post-link { flex-direction: column; gap: 0.2rem; }
-    .post-date { font-size: 0.75rem; }
-  }
-</style>
