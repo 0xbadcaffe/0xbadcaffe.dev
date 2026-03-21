@@ -4,8 +4,6 @@ pubDate: 2026-03-20
 tags: ["llm", "inference", "systems", "kv-cache", "bm3d", "llama.cpp", "ollama"]
 ---
 
-## An embedded engineer’s first serious dive into LLM serving, KV-cache waste, and a prototype runtime built around shared-prefix state.
-
 ## My first real dive into AI
 
 I’ve spent most of my career nowhere near AI.
