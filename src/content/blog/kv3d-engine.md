@@ -176,11 +176,12 @@ That distinction is important:
 For this project, `llama.cpp` is where I want control. Ollama is the UX shape I want to stay compatible with.
 
 Useful references:
+
 - `llama.cpp` repo: [github.com/ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp)
-- `llama.cpp` build docs: [docs/build.md](https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md)
-- `llama.cpp` HTTP server: [tools/server/README.md](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md)
-- Ollama API intro: [docs.ollama.com/api/introduction](https://docs.ollama.com/api/introduction)
-- Ollama quickstart: [docs.ollama.com/quickstart](https://docs.ollama.com/quickstart)
+- `llama.cpp` build docs: [Build instructions](https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md)
+- `llama.cpp` HTTP server: [Server README](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md)
+- Ollama API: [ollama.com/docs/api](https://ollama.com/docs/api)
+- Ollama quickstart: [ollama.com/docs](https://ollama.com/docs)
 
 ## The runtime architecture
 
@@ -215,9 +216,7 @@ The first claim is narrow and measurable:
 
 > on repeated-prefix workloads, a prefix-aware KV runtime should fit more useful session state on the same hardware.
 
-Not “solve LLM serving.”
-Not “replace every inference engine.”
-Just that one claim.
+Not “solve LLM serving.” Not “replace every inference engine.” Just that one claim.
 
 If it holds, then Phase 2 becomes interesting:
 
