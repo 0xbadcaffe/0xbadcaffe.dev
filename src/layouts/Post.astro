@@ -26,14 +26,6 @@ const readingTime = Math.max(1, Math.ceil(words / 200));
       <time datetime={pubDate.toISOString()}>📅 {date}</time>
       <span class="opacity-40">•</span>
       <span>{readingTime} min read</span>
-      {tags.length > 0 && (
-        <>
-          <span class="opacity-40">•</span>
-          <div class="flex gap-2 flex-wrap">
-            {tags.map(t => <span class="tag">{t}</span>)}
-          </div>
-        </>
-      )}
     </div>
 
     <div class="prose">
