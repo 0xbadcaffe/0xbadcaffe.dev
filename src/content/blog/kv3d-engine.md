@@ -1,129 +1,257 @@
 ---
 title: "KV3D Engine: rethinking KV cache compression for LLM serving"
-description: "My first real dive into AI, LLMs, and tokens — and what happens when I got curious about where all the memory goes."
 pubDate: 2026-03-20
-tags: ["llm", "inference", "systems", "kv-cache", "bm3d"]
+tags: ["llm", "inference", "systems", "kv-cache", "bm3d", "llama.cpp", "ollama"]
 ---
 
-## My first try on AI, LLM and tokens
+## An embedded engineer’s first serious dive into LLM serving, KV-cache waste, and a prototype runtime built around shared-prefix state.
 
-I've spent most of my career as far from AI as you can get — kernel space, network drivers, hardware that lies to you. LLMs always felt like someone else's problem.
+## My first real dive into AI
 
-Then I started actually using them. And like any embedded engineer, I couldn't just use a thing. I had to understand what was happening underneath.
+I’ve spent most of my career nowhere near AI.
 
-So here's where I landed after a few weeks of reading. Starting simple.
+My comfort zone is kernel space, network drivers, DMA rings, firmware bugs, hardware that lies to you, and systems that only fail when the logs are off. LLMs always felt like someone else’s stack.
 
-## What's a token? (for a 3 year old)
+Then I started actually using them.
 
-Imagine you're reading a book out loud, but instead of reading one letter at a time, you read little chunks — "the", "dog", "ran". Those chunks are tokens.
+And like any embedded engineer, I couldn’t leave it at “it works.” I wanted to know what was underneath, where the cycles went, where the memory went, and which part of the architecture was getting away with something expensive.
 
-An LLM doesn't see words or sentences. It sees a stream of tokens — little pieces of text, sometimes a full word, sometimes just part of one. Everything you type gets chopped into tokens before the model ever touches it.
+This post is the result of that curiosity.
 
-The model reads all your tokens, thinks really hard, and then picks the next token that makes the most sense. Then the next. Then the next. That's how it writes back to you — one token at a time.
+Not a grand theory. Just the first serious idea that made me stop and think: _there’s redundant state here, and we’re paying for it over and over again_.
 
-## What's a KV cache? (also for a 3 year old)
+## Tokens, briefly
 
-When the model reads your tokens, it does a lot of math on each one. It figures out how each token relates to every other token — which words matter for understanding which other words.
+An LLM does not read text the way we do. Before the model sees anything, the input is split into **tokens**: small chunks of text that may be whole words, parts of words, punctuation, or formatting.
 
-That math is expensive. And here's the thing: once it's done, you don't need to redo it.
+Inference then becomes a loop:
 
-So the model saves the results. Key-Value cache — KV cache. Keys and values are the two parts of that math it saves. Every token you've sent, the model has already processed. When you send the next message, it picks up right where it left off without recomputing everything from scratch.
+1. read a sequence of tokens,
+2. compute an internal representation,
+3. predict the next token,
+4. append it,
+5. repeat.
 
-The problem: that saved math takes up a lot of memory. A lot. Especially when you have hundreds of sessions running at the same time, each with their own history.
+That much is well known. The part that got my attention was what the model keeps around between steps.
 
-## Where it gets interesting
+## KV cache, briefly
 
-Here's what caught my attention.
+Inside a transformer, attention is expensive.
 
-In most real deployments — enterprise copilots, agent systems, RAG pipelines — most sessions start with the exact same prompt prefix. The same system instructions, the same tool definitions, the same scaffolding. Repeated thousands of times across thousands of sessions.
+While processing a prompt, the model computes internal **keys** and **values** for each token at each layer. Those tensors get cached so the model does not need to recompute the entire history every time it generates the next token.
 
-And yet every session computes and stores its own KV cache for that shared prefix. Independently. Every time.
+That saved state is the **KV cache**.
 
-That felt wasteful in a way I recognized — the kind of redundancy that would get you a comment in a kernel review.
+The good news is that it saves compute.
 
-**KV3D Engine** is the idea I started building around: compute the shared prefix cache once, store it as a snapshot, and keep only the session-specific delta per user.
+The bad news is that it can consume a lot of memory, especially for long contexts or many concurrent sessions. Once I started looking at serving systems through that lens, the architecture stopped feeling mystical and started feeling familiar: hot state, warm state, cold state, and a scheduler trying to decide what deserves fast memory.
 
-```
+## The waste that made this click for me
+
+What really made the idea click was not “AI magic.” It was a very old systems smell: duplicated state hidden behind a convenient abstraction.
+
+In most practical deployments, sessions do **not** begin from scratch in any meaningful sense. Enterprise copilots, support assistants, agent frameworks, and RAG systems usually start from a repeated scaffold:
+
+- the same system prompt,
+- the same tool definitions,
+- the same response format contract,
+- the same orchestration wrapper.
+
+Different users, different questions, but a lot of the prefix is identical.
+
+And yet the serving stack often computes and stores KV state for that shared prefix separately for every session.
+
+That felt wasteful in exactly the way that would get you a sharp comment in a kernel review.
+
+So the first idea behind **KV3D Engine** is simple:
+
+```text
 KV_session ≈ KV_shared_prefix + delta_session
 ```
 
-More sessions on the same hardware. Less redundant work. Same output quality.
+Compute the shared-prefix state once. Keep it as a reusable snapshot. Store only what is specific to the session.
 
-## The BM3D connection
+That is the whole instinct in one line.
 
-This is where it gets more interesting — and where the name comes from.
+## Why I think this is plausible
 
-**BM3D** (Block-Matching and 3D Filtering) is a classical image denoising algorithm. The idea is elegant: instead of denoising each image patch in isolation, find *similar* patches across the image, group them into a 3D stack, apply a transform (DCT or wavelet) along the grouping dimension, threshold in that transform domain, then inverse-transform and aggregate back.
+I am not claiming all KV state is globally compressible, or that arbitrary sessions naturally cluster into something elegant.
 
-The key insight is **non-local grouping**: similar patches share structure. Compressing them together is dramatically more efficient than compressing each independently.
+I am making a much narrower claim:
 
-The paper that started connecting this to KV caches for me is [KVSharer (arxiv 2412.19821)](https://arxiv.org/html/2412.19821v1), which explores sharing and compressing KV cache layers across LLM inference. Reading it alongside BM3D literature made something click.
+> for repeated-prefix workloads, early KV state should be highly correlated across sessions, and that correlation is worth exploiting as a systems primitive.
 
-**KV blocks across sessions with the same prompt family look a lot like similar patches in an image.** They share structure — the shared prefix induces similar activation patterns across layers. The per-session variation is the "noise" or residual on top of that shared structure.
+That is why the first prototype is intentionally conservative:
 
-The BM3D pipeline maps onto the KV problem like this:
+- exact shared prefix only,
+- no fuzzy matching,
+- no learned codec,
+- no magical transform yet.
+
+First prove that **state deduplication** is useful. Then get more ambitious.
+
+## Where BM3D entered the picture
+
+The BM3D connection came later.
+
+BM3D, short for **Block-Matching and 3D Filtering**, is a classical image denoising method. Its core idea is elegant: do not process each patch in isolation. Find similar patches across the image, stack them together, move to a transform domain, preserve the coherent structure, and suppress the rest.
+
+What mattered to me was not image denoising itself. It was the design principle:
+
+> when the redundancy lives across many similar objects, compressing each object alone leaves performance on the table.
+
+That maps surprisingly well onto KV cache serving.
+
+If many sessions share a prompt family, then KV blocks from those sessions may also share structure. The common prefix-induced part acts like the repeated signal. The session-specific variation becomes the residual.
+
+That does **not** mean KV tensors are “basically images.” It means repeated prompt families may induce repeated activation structure, and that makes grouped compression plausible.
+
+## The BM3D-style mapping
+
+The analogy I have in mind looks like this:
 
 | BM3D concept | KV3D equivalent |
 |---|---|
 | Similar image patches | KV blocks from sessions with the same prompt family |
-| Block matching / grouping | Exact-prefix hash, then near-prefix clustering |
-| 3D transform stack (DCT/wavelet) | Transform applied across the grouped KV block dimension |
-| Threshold / compress in transform domain | Compress the shared prototype; store only the residual delta |
-| Inverse transform + aggregate | Reconstruct working KV view before decode |
+| Block matching | Exact-prefix hashing first, near-prefix clustering later |
+| 3D transform/grouped basis | DCT, PCA, FFT, or learned basis across grouped KV blocks |
+| Keep coherent coefficients | Preserve the shared prototype |
+| Store the remainder | Quantize and store only the per-session residual |
 
-## What we're not doing
+The important part is the grouping logic, not loyalty to one specific transform.
 
-To be clear: **we are not literally porting BM3D**.
+So when I say “BM3D-inspired,” I mean I’m borrowing the **non-local grouping principle**, not literally porting an image algorithm into transformer serving.
 
-We are porting the *principle* of non-local grouping.
+## What the MVP actually is
 
-Then, instead of BM3D's classic DCT/wavelet transform stack, we test transforms that make sense for KV tensors — DCT, FFT, PCA, or learned dictionaries applied across grouped KV blocks. The right transform is an empirical question. The principle is what matters.
+The first prototype is intentionally boring in the best possible way.
 
-The starting point (MVP) is simpler: exact-prefix matching with a shared snapshot and per-session delta. No grouping, no transforms yet. That's Phase 1. The BM3D-inspired collaborative codec is Phase 2 — once the baseline proves the idea works at all.
+It is **not** a fancy grouped codec yet.
 
-## The architecture
+It is a prefix-aware runtime with a reusable shared snapshot and separate per-session state:
 
-The engine is built as an inference runtime layered on top of `llama.cpp`. The novel logic lives in the cache manager and scheduler, not the execution path.
+- detect an exact shared prefix,
+- build one canonical KV snapshot for that prefix,
+- store per-session suffix state separately,
+- reconstruct a working KV view before decode,
+- fall back to baseline behavior whenever needed.
 
-At a high level:
+That gives me a clean baseline to measure:
 
-```
-request → prefix detector → session manager → execution backend
+- memory saved,
+- sessions per GPU,
+- latency impact,
+- output drift.
+
+Only after that baseline works do I earn the right to try grouped transforms and collaborative residual coding.
+
+## Why `llama.cpp` is the right place to prototype this
+
+I do **not** want to rebuild the entire inference stack from scratch.
+
+For a prototype like this, `llama.cpp` is the obvious substrate: it is a widely used C/C++ inference engine designed for local and cloud execution across a wide range of hardware, and it already ships with a library interface, local build path, and even an HTTP server.
+
+That matters because KV3D is not trying to innovate on matmul kernels or token sampling. The novelty lives in:
+
+- KV-cache layout,
+- shared-prefix snapshotting,
+- session delta storage,
+- restore and eviction policy,
+- memory tiering,
+- scheduler decisions.
+
+So the sensible plan is:
+
+- use `llama.cpp` for model execution,
+- add KV3D around the cache manager and runtime layer,
+- expose the result through an OpenAI-compatible or Ollama-like API.
+
+Ollama is useful here as a product reference point. It provides a polished local runtime and API surface, and by default serves its API locally at `http://localhost:11434/api`.
+
+That distinction is important:
+
+- **`llama.cpp`** is the inference backend and developer substrate.
+- **Ollama** is the product/runtime experience many developers already understand.
+
+For this project, `llama.cpp` is where I want control. Ollama is the UX shape I want to stay compatible with.
+
+Useful references:
+- `llama.cpp` repo: [github.com/ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp)
+- `llama.cpp` build docs: [docs/build.md](https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md)
+- `llama.cpp` HTTP server: [tools/server/README.md](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md)
+- Ollama API intro: [docs.ollama.com/api/introduction](https://docs.ollama.com/api/introduction)
+- Ollama quickstart: [docs.ollama.com/quickstart](https://docs.ollama.com/quickstart)
+
+## The runtime architecture
+
+At a high level, the engine looks like this:
+
+```text
+request → prefix detector → session manager → llama.cpp backend
                                    ↕
-              shared prefix snapshot store + delta codec
+              shared prefix snapshot store + delta state
                                    ↕
                   GPU hot cache / RAM warm cache / SSD cold cache
 ```
 
 For each incoming request:
-1. Hash and canonicalize the prompt prefix to detect the prefix family
-2. Check if a shared KV snapshot exists for that family
-3. If yes — restore the shared prefix state and run only the session-specific suffix through `llama.cpp`
-4. Compress and store the session-specific delta
-5. On next request — reconstruct the working KV view from shared snapshot + delta
 
-The fallback is always raw KV. If something looks wrong — latency spikes, quality drift, codec failure — the engine reverts to baseline behavior automatically.
+1. Canonicalize and hash the prompt prefix.
+2. Map it to a prompt family.
+3. Check whether a shared KV snapshot already exists.
+4. If it does, restore that shared state and run only the session-specific suffix.
+5. Store per-session state separately.
+6. On resume, reconstruct a working KV view from shared snapshot + session delta.
 
-## The MVP
+And the most important engineering rule is this:
 
-The first version is intentionally narrow:
+> the fallback is always raw KV.
 
-- `llama.cpp` as the backend
-- exact prefix matching only — no fuzzy clustering yet
-- one shared KV snapshot per prefix family
-- per-session deltas stored separately
-- GPU hot cache + host RAM warm cache
-- OpenAI-compatible chat/completions API
-- honest benchmarks against a baseline runtime
+If restore cost is too high, quality drifts, or the assumptions stop holding, the engine should degrade gracefully to ordinary serving.
 
-The goal isn't to solve everything. The goal is to prove one claim: *for repeated-prefix workloads, this approach fits more useful session state on the same hardware.*
+## What I’m actually trying to prove
 
-If that holds up, the BM3D-inspired phase follows.
+The first claim is narrow and measurable:
+
+> on repeated-prefix workloads, a prefix-aware KV runtime should fit more useful session state on the same hardware.
+
+Not “solve LLM serving.”
+Not “replace every inference engine.”
+Just that one claim.
+
+If it holds, then Phase 2 becomes interesting:
+
+- near-prefix clustering,
+- grouped KV blocks,
+- transform-domain residual coding,
+- shared prototypes plus quantized deltas.
+
+That is where the BM3D inspiration becomes an actual codec instead of just an architectural instinct.
+
+## Failure modes I expect
+
+There are several ways this can fail:
+
+- the session-specific delta may still be too large,
+- reconstruction cost may hurt latency,
+- some layers may be too sensitive to compression,
+- exact-prefix reuse may help less than I expect on real traffic,
+- the best transform for grouped KV blocks may turn out not to be DCT, FFT, or PCA at all.
+
+That is fine. I would rather discover that with a disciplined baseline than hide it behind a clever-sounding compression story.
 
 ## Ongoing work
 
-I'm building this at [github.com/0xbadcaffe/kv3d](https://github.com/0xbadcaffe/kv3d). Early days. The architecture document covers the full design including the roadmap from exact-prefix MVP through collaborative block codec.
+I’m building this at [github.com/0xbadcaffe/kv3d](https://github.com/0xbadcaffe/kv3d).
 
-I don't know yet if this works at the scale I'm imagining. The delta representation might not compress as well in practice as it does on paper. The right transform for grouped KV blocks might be none of the ones I listed. The quality guardrails might be too aggressive or not aggressive enough.
+It is early. The architecture document covers the longer roadmap, from exact-prefix snapshotting through collaborative block grouping and a real residual codec.
 
-More on this as it develops.
+What I like about this project is that it stopped feeling like “AI” and started feeling like systems work:
+
+there is redundant state,  
+there are memory tiers,  
+there is a scheduler,  
+there is a restore path,  
+and there is probably a simpler baseline hiding underneath a more complicated idea.
+
+That is usually where the interesting work starts.
