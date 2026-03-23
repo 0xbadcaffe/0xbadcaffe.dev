@@ -3,7 +3,7 @@ const { current } = Astro.props;
 const links = [
   { href: '/blog', label: 'posts' },
   { href: '/projects', label: 'projects' },
-  { href: '/#about', label: 'about' },
+  { href: '/about', label: 'about' },
 ];
 ---
 
@@ -32,26 +32,3 @@ const links = [
   </div>
 </header>
 
-<script>
-  const btn = document.getElementById('theme-toggle');
-  const icon = document.getElementById('theme-icon');
-  const root = document.documentElement;
-
-  function applyTheme(dark: boolean) {
-    if (dark) {
-      root.setAttribute('data-theme', 'dark');
-      if (icon) icon.textContent = '◑';
-    } else {
-      root.removeAttribute('data-theme');
-      if (icon) icon.textContent = '○';
-    }
-  }
-
-  applyTheme(localStorage.getItem('theme') !== 'light');
-
-  btn?.addEventListener('click', () => {
-    const isDark = root.getAttribute('data-theme') === 'dark';
-    applyTheme(!isDark);
-    localStorage.setItem('theme', isDark ? 'light' : 'dark');
-  });
-</script>

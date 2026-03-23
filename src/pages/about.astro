@@ -1,0 +1,57 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="About" current="/about">
+  <article class="mx-auto w-full max-w-3xl px-4 pt-10 pb-16">
+
+    <h1 class="text-2xl font-bold text-[var(--accent)] mb-2">About</h1>
+    <hr class="border-[var(--border)] mb-8" />
+
+    <div class="prose">
+      <p>
+        I'm Roy Cohen — kernel developer, network driver engineer, embedded Linux hacker.
+        Most of my time is spent below the abstraction layer, where hardware lies and datasheets are wrong.
+      </p>
+
+      <p>
+        My usual territory: Linux kernel, network drivers, DMA rings, firmware debugging,
+        Yocto builds that take 6 hours, and systems that only fail when the logs are off.
+      </p>
+
+      <p>
+        This blog is a logbook. What I built, what broke, what I learned.
+        No schedule — just notes when something is worth keeping.
+      </p>
+
+      <p>
+        Lately I've been poking at LLM inference from a systems angle — not the model side,
+        but the memory, the scheduler, the parts that feel like kernel problems in disguise.
+        That's what the <a href="/blog/kv3d-engine">KV3D Engine</a> post is about.
+      </p>
+
+      <h2>Skills</h2>
+      <ul>
+        <li>Linux Kernel — drivers, subsystems, debugging</li>
+        <li>Network drivers — libpcap, raw sockets, packet analysis</li>
+        <li>Embedded Linux — Yocto, BSP bring-up, device trees</li>
+        <li>Rust — systems tooling, TUI apps</li>
+        <li>FPGA / HDL — RTL design, simulation</li>
+        <li>Reverse engineering — firmware, protocols</li>
+        <li>C / C++ — embedded and kernel space</li>
+      </ul>
+
+      <h2>Find me</h2>
+      <ul>
+        <li><a href="https://github.com/0xbadcaffe" target="_blank" rel="noopener">GitHub</a> — code and projects</li>
+        <li><a href="https://x.com/0xbadcaffe" target="_blank" rel="noopener">X / Twitter</a></li>
+        <li><a href="/rss.xml">RSS feed</a> — if you still use RSS (you should)</li>
+      </ul>
+
+      <p>
+        The name is <a href="https://en.wikipedia.org/wiki/Hexspeak" target="_blank" rel="noopener">hexspeak</a>.
+        <code>0xBADCAFFE</code> — bad coffee. Accurate.
+      </p>
+    </div>
+  </article>
+</Base>
