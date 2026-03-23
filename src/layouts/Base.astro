@@ -30,10 +30,16 @@ const {
   <title>{title} // 0xbadcaffe</title>
   <ViewTransitions />
   <script is:inline>
-    // Apply theme before first paint to prevent flash
-    if (localStorage.getItem('theme') !== 'light') {
-      document.documentElement.setAttribute('data-theme', 'dark');
+    function applyStoredTheme() {
+      if (localStorage.getItem('theme') !== 'light') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
     }
+    applyStoredTheme();
+    // Re-apply after every ViewTransitions page swap
+    document.addEventListener('astro:after-swap', applyStoredTheme);
   </script>
 </head>
 <body>
