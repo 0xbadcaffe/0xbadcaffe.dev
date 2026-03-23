@@ -13,13 +13,15 @@ function readingTime(body: string) {
 ---
 
 <Base title="Home" current="/">
-  <section class="pt-6 pb-0">
-    <img
-      src="/banner.jpg"
-      alt="0xbadcaffe"
-      class="w-full rounded-lg mb-8"
-      style="max-height: 260px; object-fit: cover; object-position: center 38%;"
-    />
+  <section class="pt-6 pb-0" style="background: var(--background);">
+    <div style="max-height: 260px; overflow: hidden; border-radius: 0.5rem; margin-bottom: 2rem; background: var(--background);">
+      <img
+        src="/banner.jpg"
+        alt="0xbadcaffe"
+        class="w-full"
+        style="object-fit: cover; object-position: center 38%; max-height: 260px; mix-blend-mode: screen; display: block;"
+      />
+    </div>
   </section>
   <section class="pt-2 pb-6">
     <p class="text-[var(--text-dim)] text-sm uppercase tracking-widest mb-4">kernel // networking // reverse engineering</p>
