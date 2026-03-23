@@ -44,14 +44,8 @@
 }
 
 @theme {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-accent:     var(--accent);
-  --color-muted:      var(--muted);
-  --color-border:     var(--border);
-
   /* Atkinson is the only font — used for everything */
-  --font-mono: 'Atkinson', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Atkinson', ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
   --font-sans: 'Atkinson', ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -70,7 +64,9 @@
   }
 
   body {
-    @apply flex min-h-svh flex-col bg-background text-foreground;
+    @apply flex min-h-svh flex-col;
+    background-color: var(--background);
+    color: var(--foreground);
     font-family: 'Atkinson', ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
     font-size: 1rem;
     line-height: 1.75;

@@ -29,6 +29,12 @@ const {
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <title>{title} // 0xbadcaffe</title>
   <ViewTransitions />
+  <script is:inline>
+    // Apply theme before first paint to prevent flash
+    if (localStorage.getItem('theme') !== 'light') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  </script>
 </head>
 <body>
   <Nav current={current} />
