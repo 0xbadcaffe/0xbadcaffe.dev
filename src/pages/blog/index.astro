@@ -33,15 +33,18 @@ const years = Object.keys(byYear).sort((a, b) => Number(b) - Number(a));
         <h2 class="text-xs uppercase tracking-widest text-[var(--accent)] mb-3">{year}</h2>
         <ul>
           {byYear[year].map(post => {
-            const date = post.data.pubDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const date = post.data.pubDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
             const mins = readingTime(post.body);
             return (
-              <li class="border-b border-[var(--border)] last:border-0">
-                <a href={`/blog/${post.slug}`} class="flex items-baseline gap-3 py-3 group">
-                  <span class="text-sm text-[var(--text-dim)] italic whitespace-nowrap w-14 shrink-0">{date}</span>
-                  <span class="text-[var(--accent)] underline decoration-dashed underline-offset-4 decoration-[1px] group-hover:decoration-2 transition-all flex-1">{post.data.title}</span>
-                  <span class="text-sm text-[var(--text-dim)] italic whitespace-nowrap ml-auto">{mins} min</span>
+              <li class="my-6">
+                <a href={`/blog/${post.slug}`} class="group inline-block">
+                  <span class="text-lg font-medium text-[var(--accent)] underline decoration-dashed underline-offset-4 decoration-[1px] group-hover:decoration-2 transition-all">{post.data.title}</span>
                 </a>
+                <div class="flex items-center gap-2 text-sm italic opacity-70">
+                  <span>📅 {date}</span>
+                  <span>•</span>
+                  <span>{mins} min read</span>
+                </div>
               </li>
             );
           })}

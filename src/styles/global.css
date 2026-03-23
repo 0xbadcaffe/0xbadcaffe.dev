@@ -68,8 +68,15 @@
   }
 
   body {
-    @apply flex min-h-svh flex-col bg-background font-mono text-foreground;
+    @apply flex min-h-svh flex-col bg-background text-foreground;
+    font-family: 'Atkinson', ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+    font-size: 1rem;
     line-height: 1.75;
+  }
+
+  /* Force Atkinson on all elements — override browser UA monospace defaults */
+  pre, code, kbd, samp, textarea, input {
+    font-family: 'Atkinson', ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
   }
 
   a { color: inherit; text-decoration: none; }
