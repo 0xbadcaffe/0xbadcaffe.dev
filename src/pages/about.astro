@@ -8,50 +8,18 @@ import Base from '../layouts/Base.astro';
     <h1 class="text-2xl font-bold text-[var(--accent)] mb-2">About</h1>
     <hr class="border-[var(--border)] mb-8" />
 
-    <div class="prose">
-      <p>
-        I'm Roy Cohen — kernel developer, network driver engineer, embedded Linux hacker.
-        Most of my time is spent below the abstraction layer, where hardware lies and datasheets are wrong.
-      </p>
+    <p class="text-[var(--foreground)] leading-relaxed mb-8">
+      This blog is a logbook. What I built, what broke, what I learned. No schedule — just notes when something is worth keeping.
+    </p>
 
-      <p>
-        My usual territory: Linux kernel, network drivers, DMA rings, firmware debugging,
-        Yocto builds that take 6 hours, and systems that only fail when the logs are off.
-      </p>
-
-      <p>
-        This blog is a logbook. What I built, what broke, what I learned.
-        No schedule — just notes when something is worth keeping.
-      </p>
-
-      <p>
-        Lately I've been poking at LLM inference from a systems angle — not the model side,
-        but the memory, the scheduler, the parts that feel like kernel problems in disguise.
-        That's what the <a href="/blog/kv3d-engine">KV3D Engine</a> post is about.
-      </p>
-
-      <h2>Skills</h2>
-      <ul>
-        <li>Linux Kernel — drivers, subsystems, debugging</li>
-        <li>Network drivers — libpcap, raw sockets, packet analysis</li>
-        <li>Embedded Linux — Yocto, BSP bring-up, device trees</li>
-        <li>Rust — systems tooling, TUI apps</li>
-        <li>FPGA / HDL — RTL design, simulation</li>
-        <li>Reverse engineering — firmware, protocols</li>
-        <li>C / C++ — embedded and kernel space</li>
-      </ul>
-
-      <h2>Find me</h2>
-      <ul>
-        <li><a href="https://github.com/0xbadcaffe" target="_blank" rel="noopener">GitHub</a> — code and projects</li>
-        <li><a href="https://x.com/0xbadcaffe" target="_blank" rel="noopener">X / Twitter</a></li>
-        <li><a href="/rss.xml">RSS feed</a> — if you still use RSS (you should)</li>
-      </ul>
-
-      <p>
-        The name is <a href="https://en.wikipedia.org/wiki/Hexspeak" target="_blank" rel="noopener">hexspeak</a>.
-        <code>0xBADCAFFE</code> — bad coffee. Accurate.
-      </p>
+    <div class="flex flex-wrap gap-3 mb-8">
+      <a href="https://github.com/0xbadcaffe" target="_blank" rel="noopener" class="px-4 py-2 border border-[var(--border)] text-[var(--text-dim)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-colors text-sm">github</a>
+      <a href="https://x.com/0xbadcaffe" target="_blank" rel="noopener" class="px-4 py-2 border border-[var(--border)] text-[var(--text-dim)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-colors text-sm">x</a>
+      <a href="/rss.xml" class="px-4 py-2 border border-[var(--border)] text-[var(--text-dim)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-colors text-sm">rss</a>
     </div>
+
+    <p class="text-sm text-[var(--text-dim)]">
+      The name is <a href="https://en.wikipedia.org/wiki/Hexspeak" target="_blank" rel="noopener" class="text-[var(--accent)] underline decoration-dashed underline-offset-4 hover:decoration-2">hexspeak</a> — <code class="text-[var(--accent)]">0xBADCAFFE</code>, bad coffee. Accurate.
+    </p>
   </article>
 </Base>
