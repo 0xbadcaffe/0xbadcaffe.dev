@@ -51,24 +51,4 @@ function readingTime(body: string) {
     </ul>
   </section>
 
-  <div class="mx-auto max-w-3xl px-4"><hr class="border-t border-[var(--border)]" /></div>
-
-  <section class="py-8 max-w-xl" id="about">
-    <h2 class="text-sm uppercase tracking-widest text-[var(--accent)] mb-5">$ whoami</h2>
-    <p class="text-[var(--text-dim)] leading-relaxed mb-4">
-      This is a logbook. What I built, what broke, what I learned. No schedule — just notes when something is worth keeping. I hope you had a !(0xbadcaffe).
-    </p>
-    <div class="flex flex-wrap gap-2 mt-4">
-      {[
-        'Linux Kernel', 'Rust', 'Packet Analysis',
-        'Reverse Engineering', 'FPGA / HDL', 'Yocto',
-        'libpcap', 'Embedded C', 'Network Protocols',
-      ].map(s => (
-        <span class="text-xs text-[var(--text-dim)] border border-[var(--border)] px-2 py-0.5 uppercase tracking-wide">{s}</span>
-      ))}
-    </div>
-    <p class="text-xs text-[var(--text-dim)] mt-4">
-      Not familiar with hexspeak? <a href="https://en.wikipedia.org/wiki/Hexspeak" target="_blank" rel="noopener" class="text-[var(--accent)] underline decoration-dashed underline-offset-4 hover:decoration-2">Wikipedia has you covered.</a>
-    </p>
-  </section>
 </Base>
