@@ -7,12 +7,16 @@ const links = [
 ];
 ---
 
-<header class="sticky top-0 z-50 bg-[var(--nav-bg)] backdrop-blur-sm border-b border-[var(--border)]">
-  <div class="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
-    <a href="/" class="flex items-center" style="height:40px;">
-      <img src="/banner.jpg" alt="0xbadcaffe" style="height:40px;width:130px;object-fit:cover;object-position:center 38%;mix-blend-mode:screen;" />
+<header class="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--nav-bg)] backdrop-blur-md">
+  <div class="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-3">
+    <a href="/" aria-label="0xbadcaffe home" class="flex shrink-0 items-center rounded-md transition-opacity hover:opacity-90">
+      <img
+        src="/banner.jpg"
+        alt="0xbadcaffe"
+        class="h-8 w-[116px] rounded-[6px] border border-white/10 bg-black object-cover object-[center_38%] mix-blend-screen sm:h-10 sm:w-[148px]"
+      />
     </a>
-    <nav class="flex items-center gap-6">
+    <nav class="flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-sm sm:gap-x-6 sm:text-base">
       {links.map(l => (
         <a
           href={l.href}
@@ -21,14 +25,6 @@ const links = [
           {l.label}
         </a>
       ))}
-      <button
-        id="theme-toggle"
-        aria-label="Toggle theme"
-        class="text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors cursor-pointer"
-      >
-        <span id="theme-icon">◑</span>
-      </button>
     </nav>
   </div>
 </header>
-
