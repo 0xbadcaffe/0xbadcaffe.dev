@@ -1,12 +1,11 @@
 ---
 title: "KV3D Engine: rethinking KV cache compression for LLM serving"
+description: "My first real dive into AI."
 pubDate: 2026-03-20
 tags: ["llm", "inference", "systems", "kv-cache", "bm3d", "llama.cpp", "ollama"]
 ---
 
 ## My first real dive into AI
-
-I’ve spent most of my career nowhere near AI.
 
 My comfort zone is kernel space, network drivers, DMA rings, firmware bugs, hardware that lies to you, and systems that only fail when the logs are off. LLMs always felt like someone else’s stack.
 

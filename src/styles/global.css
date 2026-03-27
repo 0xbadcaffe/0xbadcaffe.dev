@@ -2,25 +2,9 @@
  * Typography and color system adapted from steipete.me
  * https://github.com/steipete/steipete.me
  * MIT License — Copyright 2025 Peter Steinberger
- * Atkinson Hyperlegible font used under open license.
  */
 
 @import "tailwindcss";
-
-@font-face {
-  font-family: 'Atkinson';
-  src: url('/fonts/atkinson-regular.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Atkinson';
-  src: url('/fonts/atkinson-bold.woff') format('woff');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
 
 /* ── TOKENS ── */
 :root {
@@ -44,9 +28,8 @@
 }
 
 @theme {
-  /* Atkinson is the only font — used for everything */
-  --font-mono: 'Atkinson', ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
-  --font-sans: 'Atkinson', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
 @layer base {
@@ -71,14 +54,13 @@
       radial-gradient(circle at top, rgba(99, 122, 179, 0.28), transparent 26rem),
       linear-gradient(180deg, rgba(82, 96, 135, 0.18), transparent 30rem);
     color: var(--foreground);
-    font-family: 'Atkinson', ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
-    font-size: 1rem;
-    line-height: 1.75;
+    font-family: var(--font-mono);
+    font-size: 1.25em;
+    line-height: 1.6;
   }
 
-  /* Force Atkinson on all elements — override browser UA monospace defaults */
   pre, code, kbd, samp, textarea, input {
-    font-family: 'Atkinson', ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+    font-family: var(--font-mono);
   }
 
   a { color: inherit; text-decoration: none; }
