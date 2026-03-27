@@ -13,14 +13,34 @@ function readingTime(body: string) {
 ---
 
 <Base title="Home" current="/">
-  <section class="pt-6 pb-0" style="background: var(--background);">
-    <div style="max-height: 260px; overflow: hidden; border-radius: 0.5rem; margin-bottom: 2rem; background: var(--background);">
-      <img
-        src="/banner.jpg"
-        alt="0xbadcaffe"
-        class="w-full"
-        style="object-fit: cover; object-position: center 38%; max-height: 260px; mix-blend-mode: screen; display: block;"
-      />
+  <section class="pt-8 pb-6 flex flex-col sm:flex-row items-start gap-6">
+    <a href="/about" class="mx-auto sm:mx-0 flex-shrink-0 group">
+      <div style="width:144px;height:144px;border-radius:50%;overflow:hidden;background:#fff;">
+        <img
+          src="/avatar.png"
+          alt="0xbadcaffe"
+          style="width:100%;height:100%;object-fit:cover;object-position:center 10%;transition:transform 0.3s;"
+          class="group-hover:scale-105"
+        />
+      </div>
+    </a>
+    <div class="flex-1 text-center sm:text-left">
+      <h1 class="text-2xl font-bold mb-2">Hi, I'm 0xbadcaffe.</h1>
+      <p class="text-[var(--text-dim)] leading-relaxed mb-4">
+        This blog is a logbook. What I built, what broke, what I learned.<br/>
+        No schedule — just notes when something is worth keeping.
+      </p>
+      <div class="flex gap-4 justify-center sm:justify-start">
+        <a href="https://github.com/0xbadcaffe" target="_blank" rel="noopener" aria-label="GitHub" class="text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        </a>
+        <a href="https://x.com/0xbadcaffe" target="_blank" rel="noopener" aria-label="X" class="text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        <a href="/rss.xml" aria-label="RSS" class="text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+        </a>
+      </div>
     </div>
   </section>
   <div class="mx-auto max-w-3xl px-4"><hr class="border-t border-[var(--border)]" /></div>
