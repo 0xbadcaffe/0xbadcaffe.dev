@@ -24,13 +24,13 @@
 
 /* ── TOKENS ── */
 :root {
-  --background: #05070b;
-  --foreground: #f5f7fb;
-  --accent:     #ff7a1a;
-  --muted:      #111722;
-  --border:     rgba(255, 122, 26, 0.2);
-  --text-dim:   #96a3ba;
-  --nav-bg:     rgba(5, 7, 11, 0.84);
+  --background: #212737;
+  --foreground: #eaedf3;
+  --accent:     #ff6b01;
+  --muted:      #343f60;
+  --border:     rgba(171, 75, 8, 0.4);
+  --text-dim:   #8b95aa;
+  --nav-bg:     rgba(33, 39, 55, 0.92);
 }
 
 [data-theme="light"] {
@@ -68,8 +68,8 @@
     @apply flex min-h-svh flex-col;
     background-color: var(--background);
     background-image:
-      radial-gradient(circle at top, color-mix(in srgb, var(--accent) 14%, transparent), transparent 32rem),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 26rem);
+      radial-gradient(circle at top, rgba(99, 122, 179, 0.28), transparent 26rem),
+      linear-gradient(180deg, rgba(82, 96, 135, 0.18), transparent 30rem);
     color: var(--foreground);
     font-family: 'Atkinson', ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
     font-size: 1rem;

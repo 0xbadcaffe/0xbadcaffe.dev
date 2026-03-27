@@ -16,7 +16,7 @@ const readingTime = Math.max(1, Math.ceil(words / 200));
 ---
 
 <Base title={title} description={description} current="/blog">
-  <article class="mx-auto w-full max-w-3xl px-4 pb-16 pt-8">
+  <article data-read-progress-root class="mx-auto w-full max-w-3xl px-4 pb-16 pt-8">
 
     <h1 class="text-2xl font-bold text-[var(--accent)] sm:text-3xl leading-tight mb-3">
       {title}
@@ -41,25 +41,48 @@ const readingTime = Math.max(1, Math.ceil(words / 200));
 </Base>
 
 <script>
-  // Scroll progress bar
+  const BAR_CONTAINER_ID = 'read-progress-container';
+  const BAR_ID = 'read-progress';
+
   function createProgressBar() {
+    if (document.getElementById(BAR_CONTAINER_ID)) return;
     const container = document.createElement('div');
+    container.id = BAR_CONTAINER_ID;
     container.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:200;height:2px;background:transparent';
     const bar = document.createElement('div');
-    bar.id = 'read-progress';
+    bar.id = BAR_ID;
     bar.style.cssText = `height:2px;width:0%;background:var(--accent);transition:width 0.1s linear`;
     container.appendChild(bar);
     document.body.appendChild(container);
   }
 
+  function removeProgressBar() {
+    const container = document.getElementById(BAR_CONTAINER_ID);
+    if (container) container.remove();
+  }
+
   function updateProgress() {
-    const bar = document.getElementById('read-progress');
+    const bar = document.getElementById(BAR_ID);
     if (!bar) return;
     const scrolled = document.documentElement.scrollTop || document.body.scrollTop;
     const total = document.documentElement.scrollHeight - document.documentElement.clientHeight;
     bar.style.width = total > 0 ? (scrolled / total * 100) + '%' : '0%';
   }
 
-  createProgressBar();
-  document.addEventListener('scroll', updateProgress, { passive: true });
+  function syncProgressBar() {
+    const isPostPage = Boolean(document.querySelector('[data-read-progress-root]'));
+    removeProgressBar();
+    if (!isPostPage) return;
+    createProgressBar();
+    updateProgress();
+  }
+
+  if (!window.__readProgressBound) {
+    window.__readProgressBound = true;
+    document.addEventListener('scroll', updateProgress, { passive: true });
+    document.addEventListener('astro:page-load', syncProgressBar);
+    document.addEventListener('astro:after-swap', syncProgressBar);
+  }
+
+  syncProgressBar();
 </script>
