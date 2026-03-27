@@ -9,12 +9,12 @@ const links = [
 
 <header class="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--nav-bg)] backdrop-blur-md">
   <div class="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-3">
-    <a href="/" aria-label="0xbadcaffe home" class="flex shrink-0 items-center rounded-md transition-opacity hover:opacity-90">
-      <img
-        src="/banner.jpg"
-        alt="0xbadcaffe"
-        class="h-7 w-[104px] rounded-[6px] border border-white/10 bg-black object-cover object-[center_38%] mix-blend-screen sm:h-9 sm:w-[134px]"
-      />
+    <a
+      href="/"
+      aria-label="0xbadcaffe home"
+      class="inline-flex shrink-0 items-center rounded-md border border-[var(--border)] bg-black/20 px-3 py-1.5 text-sm font-bold tracking-[0.22em] text-[var(--foreground)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+    >
+      <span class="text-[var(--accent)]">0x</span>badcaffe
     </a>
     <nav class="flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-sm sm:gap-x-6 sm:text-base">
       {links.map(l => (

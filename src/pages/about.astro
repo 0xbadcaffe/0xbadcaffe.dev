@@ -4,19 +4,21 @@ import Base from '../layouts/Base.astro';
 
 <Base title="About" current="/about">
   <article class="mx-auto w-full max-w-3xl px-4 pt-10 pb-16">
-
     <h1 class="text-2xl font-bold text-[var(--accent)] mb-2">$ whoami</h1>
     <hr class="border-[var(--border)] mb-8" />
 
     <p class="text-[var(--foreground)] leading-relaxed mb-4">
-      This blog is a logbook. What I built, what broke, what I learned. No schedule — just notes when something is worth keeping.
+      I work on low-level software, embedded systems, and bugs that somehow disappear the moment you add logging.
     </p>
 
-    <div class="flex flex-wrap gap-2 mb-8">
-      {['Linux Kernel', 'Rust', 'Packet Analysis', 'Reverse Engineering', 'FPGA / HDL', 'Yocto', 'libpcap', 'Embedded C', 'Network Protocols'].map(s => (
-        <span class="text-xs text-[var(--text-dim)] border border-[var(--border)] px-2 py-0.5 uppercase tracking-wide">{s}</span>
-      ))}
-    </div>
+    <p class="text-[var(--foreground)] leading-relaxed mb-8">
+      This blog is my logbook: things I built, things I broke, and the notes I’d rather save than painfully rediscover later.
+    </p>
+
+    <blockquote class="mb-8 border-l-[3px] border-[var(--accent)] pl-5 text-[var(--text-dim)]">
+      <p class="leading-relaxed">“One accurate measurement is worth a thousand expert opinions.”</p>
+      <footer class="mt-3 text-sm uppercase tracking-[0.22em] text-[var(--accent)]">Grace Hopper</footer>
+    </blockquote>
 
     <div class="flex flex-wrap gap-3 mb-8">
       <a href="https://github.com/0xbadcaffe" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--muted)] hover:bg-[var(--accent)] text-[var(--foreground)] hover:text-white rounded transition-colors text-sm font-medium">
