@@ -1,6 +1,6 @@
 # 0xbadcaffe.dev
 
-Personal blog. Kernel // Networking // Reverse Engineering.
+Personal blog.
 
 Built with [Astro](https://astro.build) and deployed on [Cloudflare Pages](https://pages.cloudflare.com).
 
